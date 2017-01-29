@@ -19,6 +19,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
 
 	final private MoviesAdapterOnClickHandler mClickHandler;
@@ -140,10 +143,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 			implements View.OnClickListener {
 
 		// Will display the position in the grid, ie 0 through getItemCount() - 1
-		ImageView mImageViewMovie;
-
-		TextView mErrorTextView;
-		ProgressBar mProgressBar;
+		@BindView(R.id.img_movie_poster) ImageView mImageViewMovie;
+		@BindView(R.id.tv_error_poster_message_display) TextView mErrorTextView;
+		@BindView(R.id.pb_poster_loading_indicator)ProgressBar mProgressBar;
 
 		Context mContext;
 		/**
@@ -155,10 +157,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 		 */
 		MovieViewHolder(View itemView, Context context) {
 			super(itemView);
-
-			mImageViewMovie = (ImageView) itemView.findViewById(R.id.img_movie_poster);
-			mProgressBar = (ProgressBar) itemView.findViewById(R.id.pb_poster_loading_indicator);
-			mErrorTextView = (TextView) itemView.findViewById(R.id.tv_error_poster_message_display);
+			ButterKnife.bind(this, itemView);
 			mContext = context;
 			itemView.setOnClickListener(this);
 		}

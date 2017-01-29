@@ -13,25 +13,25 @@ import android.widget.TextView;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /*
 * Details activity shows detailed information about selected movie.
 */
 public class MovieDetailsActivity extends AppCompatActivity {
 
-	private ImageView mImageView;
-	private TextView mTitle;
-	private TextView mSynopsis;
-	private TextView mScore;
-	private TextView mReleaseYear;
+	@BindView(R.id.img_details_movie_poster) ImageView mImageView;
+	@BindView(R.id.tv_title) TextView mTitle;
+	@BindView(R.id.tv_synopsis) TextView mSynopsis;
+	@BindView(R.id.tv_score) TextView mScore;
+	@BindView(R.id.tv_release_date) TextView mReleaseYear;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_movie_details);
-		mImageView = (ImageView)findViewById(R.id.img_details_movie_poster);
-		mReleaseYear = (TextView) findViewById(R.id.tv_release_date);
-		mSynopsis = (TextView) findViewById(R.id.tv_synopsis);
-		mTitle = (TextView) findViewById(R.id.tv_title);
-		mScore = (TextView) findViewById(R.id.tv_score);
+		ButterKnife.bind(this);
 
 		Intent intentThatStartedThisActivity = getIntent();
 		if (intentThatStartedThisActivity.hasExtra(Movie.TAG)) {

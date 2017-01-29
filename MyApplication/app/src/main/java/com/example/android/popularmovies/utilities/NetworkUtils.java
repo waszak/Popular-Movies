@@ -17,12 +17,11 @@ import java.util.Scanner;
  * These utilities will be used to communicate with the network.
  */
 public class NetworkUtils {
-    final static private String THE_MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/movie";
 
+    final static private String THE_MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/movie";
 	final static private String POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185/";
 
     final static private String PARAM_API_KEY= "api_key";
-
 	final static private String PARAM_PAGE= "page";
 
     final static private String topRated ="/top_rated";

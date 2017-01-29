@@ -24,15 +24,18 @@ import com.example.android.popularmovies.utilities.NetworkUtils;
 import java.net.URL;
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity
 	implements  MoviesAdapter.MoviesAdapterOnClickHandler {
 
 
-    private RecyclerView mMovieList;
-    private MoviesAdapter mMoviesAdapter;
-	private TextView mErrorMessageDisplay;
-	private ProgressBar mLoadingIndicator;
+    @BindView(R.id.rv_movies) RecyclerView mMovieList;
+	@BindView(R.id.tv_error_message_display) TextView mErrorMessageDisplay;
+	@BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
 
+	private MoviesAdapter mMoviesAdapter;
 	private ScrollListener mScrollListener;
 
     private static final int NUMBERS_OF_COLUMN = 2;
@@ -41,9 +44,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-		mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
-		mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+		ButterKnife.bind(this);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, NUMBERS_OF_COLUMN);
 		mScrollListener= new ScrollListener(gridLayoutManager) {
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity
 
 		};
 
-        mMovieList = (RecyclerView) findViewById(R.id.rv_movies);
         mMovieList.setLayoutManager(gridLayoutManager);
         mMovieList.setHasFixedSize(true);
 
