@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright (C) 2017. The Android Open Source Project
   ~
@@ -16,19 +15,16 @@
   ~
   -->
 
-<resources>
-    <color name="colorPrimary">#607d8b</color>
-    <color name="colorPrimaryDark">#455a64</color>
-    <color name="colorAccent">#ffc107</color>
-    <color name="colorPrimaryLight">#CFD8DC</color>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.example.android.popularmovies.MovieTrailersFragment">
 
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/hello_blank_fragment"/>
 
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#757575</color>
-
-    <color name="icons">#FFFFFF</color>
-    <color name="divider">#BDBDBD</color>
-
-    <color name="white">#FFFFFF</color>
-
-</resources>
+</FrameLayout>

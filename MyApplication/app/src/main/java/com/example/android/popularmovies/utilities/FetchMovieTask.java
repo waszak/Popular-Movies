@@ -18,8 +18,6 @@ package com.example.android.popularmovies.utilities;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v4.content.AsyncTaskLoader;
-import android.view.View;
 
 
 import com.example.android.popularmovies.Movie;
@@ -32,7 +30,6 @@ import java.util.ArrayList;
 public class FetchMovieTask extends AsyncTask<Boolean,Void,ArrayList<Movie>> {
 
     private int mPage;
-    private ArrayList<Movie> mMovies;
     private MoviesAdapter.SORT_MODE mSortMode;
     private Context mContext;
     private ICallbackMovieTask mCallbackMovieTask;

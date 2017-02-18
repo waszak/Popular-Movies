@@ -17,41 +17,30 @@
 
 package com.example.android.popularmovies;
 
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
-import java.util.ArrayList;
 
 /**
- * Created by Waszak on 13.02.2017.
+ * A simple {@link Fragment} subclass.
  */
+public class MovieReviewsFragment extends Fragment {
 
-public class PagerAdapterMovie extends FragmentPagerAdapter {
 
-    private ArrayList<Fragment> mTabs;
-
-    public PagerAdapterMovie(FragmentManager manager){
-        super(manager);
-        mTabs = new ArrayList<>();
+    public MovieReviewsFragment() {
+        // Required empty public constructor
     }
 
-    public void addTab(Fragment tab){
-        mTabs.add(tab);
-    }
-
-    public Fragment getItem(int position) {
-        if(position > mTabs.size() -1){
-            return  null;
-        }
-        return mTabs.get(position);
-
-    }
 
     @Override
-    public int getCount() {
-        return mTabs.size();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_movie_reviews, container, false);
     }
+
 }

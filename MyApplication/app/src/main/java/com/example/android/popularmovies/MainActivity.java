@@ -211,11 +211,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle state) {
 
-        mGridState = mGridLayoutManager.onSaveInstanceState();
+        /*mGridState = mGridLayoutManager.onSaveInstanceState();
         state.putParcelable(LIST_STATE_KEY, mGridState);
         state.putParcelableArrayList(MOVIES_ADAPTER_STATE,mMoviesAdapter.getList());
         state.putBoolean(SORT_TOP_RATED, mMoviesAdapter.topRated());
-        state.putInt(CURRENT_PAGE, mScrollListener.getCurrentPage());
+        state.putInt(CURRENT_PAGE, mScrollListener.getCurrentPage());*/
         super.onSaveInstanceState(state);
     }
 
