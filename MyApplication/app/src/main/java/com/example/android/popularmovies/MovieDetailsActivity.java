@@ -18,12 +18,15 @@
 package com.example.android.popularmovies;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,32 +42,48 @@ import butterknife.ButterKnife;
 */
 public class MovieDetailsActivity extends AppCompatActivity {
 
-   /* @BindView(R.id.img_details_movie_poster) ImageView mImageView;
-    @BindView(R.id.tv_title) TextView mTitle;
+
+    /*@BindView(R.id.tv_title) TextView mTitle;
     @BindView(R.id.tv_synopsis) TextView mSynopsis;
     @BindView(R.id.tv_score) TextView mScore;
     @BindView(R.id.tv_release_date) TextView mReleaseYear;*/
 
     @BindView(R.id.view_pager) ViewPager mViewPager;
     @BindView(R.id.tab_layout) TabLayout mTabLayout;
+    @BindView(R.id.toolbar)  Toolbar mToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
         ButterKnife.bind(this);
 
-        mTabLayout.addTab(mTabLayout.newTab().setText("Tab 1"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("Tab 2"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("Tab 3"));
+        setSupportActionBar(mToolbar);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
+        mTabLayout.addTab(mTabLayout.newTab().setText(getString(R.string.details)));
+        mTabLayout.addTab(mTabLayout.newTab().setText(getString(R.string.reviews)));
+        mTabLayout.addTab(mTabLayout.newTab().setText(getString(R.string.trailers)));
         mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        final PagerAdapter pagerViewAdapterDetails = new PagerAdapterMovie(fragmentManager);
 
+        final PagerAdapterMovie pagerViewAdapterDetails = new PagerAdapterMovie(fragmentManager);
+        Intent intentThatStartedThisActivity = getIntent();
+
+        Movie movie = null;
+        if (intentThatStartedThisActivity.hasExtra(Movie.TAG)) {
+            movie = intentThatStartedThisActivity.getParcelableExtra(Movie.TAG);
+        }
+        pagerViewAdapterDetails.addTab(MovieDescriptionFragment.newInstance(movie));
+        pagerViewAdapterDetails.addTab(new MovieReviewsFragment());
+        pagerViewAdapterDetails.addTab(MovieTrailersFragment.newInstance(movie));
         mViewPager.setAdapter(pagerViewAdapterDetails);
-
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
-        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
@@ -81,18 +100,15 @@ public class MovieDetailsActivity extends AppCompatActivity {
             }
         });
 
+        /*mTabLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mTabLayout.setupWithViewPager(mViewPager);
+            }
+        });*/
 
-        /*Intent intentThatStartedThisActivity = getIntent();
-        if (intentThatStartedThisActivity.hasExtra(Movie.TAG)) {
 
-            Movie movie = intentThatStartedThisActivity.getParcelableExtra(Movie.TAG);
-            String fileName = movie.getPosterFileName();
-            mTitle.setText(movie.getTitle());
-            mScore.setText("Score: "+String.format( "%.2f",movie.getScore())+"/10");
-            mSynopsis.setText(movie.getPlotSynopsis());
-            mReleaseYear.setText(movie.getReleaseDate());
-            Picasso.with(this).load(NetworkUtils.buildPosterStringUrl(fileName)).into(mImageView);
-        }*/
+
 
     }
 }

@@ -36,12 +36,19 @@ public class NetworkUtils {
 
     final static private String THE_MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/movie";
     final static private String POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185/";
+    final static private String YOUTUBE_THUMBNAIL="https://img.youtube.com/vi/%s/hqdefault.jpg";
 
     final static private String PARAM_API_KEY= "api_key";
     final static private String PARAM_PAGE= "page";
 
-    final static private String topRated ="/top_rated";
-    final static private String popularity = "/popular";
+    final static private String TOP_RATED ="/top_rated";
+    final static private String POPULARITY = "/popular";
+
+    final static private String VIDEOS = "/%d/videos";
+
+    final static private String REVIEWS = "/%d/reviews";
+
+    final static private String IMAGES = "/%d/images";
 
     /**
      * Builds the URL used to query The Movie DB
@@ -49,15 +56,15 @@ public class NetworkUtils {
      * @param apiKey Api key to access The Movie DB.
      * @return The URL to use to query the The Movie DB.
      */
-    public static URL buildUrl(int page, MoviesAdapter.SORT_MODE sortMode, String apiKey ) {
+    public static URL buildUrlToRequestPage(int page, MoviesAdapter.SORT_MODE sortMode, String apiKey ) {
         String sortBy;
         switch (sortMode){
             case MOST_POPULAR:
-                sortBy = popularity;
+                sortBy = POPULARITY;
                 break;
             case TOP_RATED:
             default:
-                sortBy = topRated;
+                sortBy = TOP_RATED;
                 break;
         }
         Uri.Builder builder = Uri.parse(THE_MOVIE_DB_BASE_URL+sortBy).buildUpon()
@@ -78,11 +85,71 @@ public class NetworkUtils {
     /**
      * Builds the URL used to query The Movie DB
      *
+     * @param additionalPath to request more details from movie.
+     * @param apiKey Api key to access The Movie DB.
+     * @return The URL to use to query the The Movie DB.
+     */
+    private static URL buildUrl(String additionalPath,String apiKey ) {
+
+        Uri.Builder builder = Uri.parse(THE_MOVIE_DB_BASE_URL+additionalPath).buildUpon()
+                .appendQueryParameter(PARAM_API_KEY, apiKey);
+
+        Uri builtUri = builder.build();
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
+    /**
+     * Builds the URL used to query The Movie DB
+     *
+     * @param movieId id of movie to query.
+     * @param apiKey Api key to access The Movie DB.
+     * @return The URL to use to query the The Movie DB.
+     */
+    public static URL buildVideosURL(int movieId, String apiKey){
+        return buildUrl(String.format(VIDEOS,movieId), apiKey);
+    }
+
+    /**
+     * Builds the URL used to query The Movie DB
+     *
+     * @param movieId id of movie to query.
+     * @param apiKey Api key to access The Movie DB.
+     * @return The URL to use to query the The Movie DB.
+     */
+    public static URL buildReviewsURL(int movieId, String apiKey){
+        return buildUrl(String.format(REVIEWS,movieId), apiKey);
+    }
+
+    /**
+     * Builds the URL used to query The Movie DB
+     *
+     * @param movieId id of movie to query.
+     * @param apiKey Api key to access The Movie DB.
+     * @return The URL to use to query the The Movie DB.
+     */
+    public static URL buildImagesURL(int movieId, String apiKey){
+        return buildUrl(String.format(IMAGES,movieId), apiKey);
+    }
+
+    /**
+     * Builds the URL used to query The Movie DB
+     *
      * @param posterFileName File name of poster
      * @return The URL to use to query the The Movie DB.
      */
     public static String buildPosterStringUrl(String posterFileName) {
         return POSTER_BASE_URL+posterFileName;
+    }
+
+    public static String buildThumbnailUrl(String youtubeId){
+        return String.format(YOUTUBE_THUMBNAIL, youtubeId);
     }
 
     /**

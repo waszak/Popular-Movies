@@ -32,17 +32,19 @@ public class Movie implements Parcelable {
     private final String mReleaseDate;
     private final double mVoteAverage;
     private final String mPlotSynopsis;
+    private final int mId;
 
-    public Movie(String title, String posterFileName, String ReleaseDate, double voteAverage, String plotSynopsis){
+    public Movie(int iD,String title, String posterFileName, String ReleaseDate, double voteAverage, String plotSynopsis){
         mTitle = title;
         mPosterFileName = posterFileName;
         mReleaseDate = ReleaseDate;
         mVoteAverage = voteAverage;
         mPlotSynopsis = plotSynopsis;
+        mId = iD;
     }
 
     public Movie(Parcel in){
-        String[] data= new String[5];
+        String[] data= new String[6];
         in.readStringArray(data);
 
         mTitle= data[0];
@@ -50,7 +52,11 @@ public class Movie implements Parcelable {
         mReleaseDate = data[2];
         mVoteAverage = Float.parseFloat(data[3]);
         mPlotSynopsis = data[4];
+        mId = Integer.parseInt(data[5]);
     }
+
+    public int getId(){ return mId; }
+
     public String getPosterFileName(){
         return mPosterFileName;
     }
@@ -67,9 +73,7 @@ public class Movie implements Parcelable {
         return mPlotSynopsis;
     }
 
-    public double getScore(){
-        return mVoteAverage;
-    }
+    public double getScore(){ return mVoteAverage; }
     @Override
     public int describeContents() {
         return 0;
@@ -77,10 +81,11 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[]{this.mTitle,this.mPosterFileName, this.mReleaseDate, Double.toString(mVoteAverage), mPlotSynopsis});
+        dest.writeStringArray(new String[]{mTitle,mPosterFileName, mReleaseDate,
+                Double.toString(mVoteAverage), mPlotSynopsis, Integer.toString(mId)});
     }
 
-    public static final Parcelable.Creator<Movie> CREATOR= new Parcelable.Creator<Movie>() {
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
 
         @Override
         public Movie createFromParcel(Parcel source) {

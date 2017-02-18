@@ -211,11 +211,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle state) {
 
-        mGridState = mGridLayoutManager.onSaveInstanceState();
+        /*mGridState = mGridLayoutManager.onSaveInstanceState();
         state.putParcelable(LIST_STATE_KEY, mGridState);
         state.putParcelableArrayList(MOVIES_ADAPTER_STATE,mMoviesAdapter.getList());
         state.putBoolean(SORT_TOP_RATED, mMoviesAdapter.topRated());
-        state.putInt(CURRENT_PAGE, mScrollListener.getCurrentPage());
+        state.putInt(CURRENT_PAGE, mScrollListener.getCurrentPage());*/
         super.onSaveInstanceState(state);
     }
 
@@ -258,32 +258,4 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
     }
 
-
-    /*@Override
-    public Loader<ArrayList<Movie>> onCreateLoader(int id, Bundle args) {
-        mLoadingIndicator.setVisibility(View.VISIBLE);
-
-        return FetchMovieTask.with(this)
-                .setOrder(MoviesAdapter.SORT_MODE.TOP_RATED) ;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<ArrayList<Movie>> loader, ArrayList<Movie> data) {
-        loader.
-        mMoviesAdapter.setMoviesData(data);
-        if (data == null) {
-            showErrorMessage();
-        } else if (1 == 1) {
-            mMoviesAdapter.setMoviesData(data);
-            showMoviesDataView();
-        } else {
-            mMoviesAdapter.addMoviesData(data);
-            showMoviesDataView();
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<ArrayList<Movie>> loader) {
-        ((FetchMovieTask )loader).setPage(1);
-    }*/
 }

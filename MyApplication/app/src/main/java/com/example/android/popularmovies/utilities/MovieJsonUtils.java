@@ -21,6 +21,7 @@ package com.example.android.popularmovies.utilities;
 import android.util.Log;
 
 import com.example.android.popularmovies.Movie;
+import com.example.android.popularmovies.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +33,12 @@ import java.util.ArrayList;
 */
 public final class MovieJsonUtils {
     private static final String TAG = MovieJsonUtils.class.getSimpleName();
+
+    private static final String TAG_RESULTS = "results";
+    private static final String TAG_DEBUG_SUCCESS = "success";
+    private static final String TAG_DEBUG_STATUS_CODE = "status_code";
+    private static final String TAG_DEBUG_STATUS_MESSAGE = "status_message";
+
     /**
      * This method parses JSON from a web response and returns an array of Strings
      * describing the weather over various days from the forecast.
@@ -46,32 +53,17 @@ public final class MovieJsonUtils {
     public static ArrayList<Movie> getMoviesFromJson(String moviesJsonStr)
             throws JSONException {
 
-        final String TAG_RESULTS = "results";
         final String TAG_POSTER_PATH ="poster_path";
         final String TAG_TITLE = "title";
         final String TAG_RELEASE_DATE= "release_date";
         final String TAG_VOTE_AVG ="vote_average";
         final String TAG_OVERVIEW = "overview";
-
-        final String TAG_DEBUG_SUCCESS = "success";
-        final String TAG_DEBUG_STATUS_CODE = "status_code";
-        final String TAG_DEBUG_STATUS_MESSAGE = "status_message";
+        final String TAG_ID = "id";
 
         JSONObject moviesJson = new JSONObject(moviesJsonStr);
+        if (validate(moviesJson))
+            return null;
 
-        /* Is there an error when we have no results? */
-        if(!moviesJson.has(TAG_RESULTS)){
-            if(moviesJson.has(TAG_DEBUG_SUCCESS)){
-                Log.v(TAG, TAG_DEBUG_SUCCESS+": "+ String.valueOf(moviesJson.getBoolean(TAG_DEBUG_SUCCESS)));
-            }
-            if(moviesJson.has(TAG_DEBUG_STATUS_CODE)){
-                Log.v(TAG, TAG_DEBUG_STATUS_CODE+": "+moviesJson.getInt(TAG_DEBUG_STATUS_CODE));
-            }
-            if(moviesJson.has(TAG_DEBUG_STATUS_MESSAGE)){
-                Log.v(TAG, TAG_DEBUG_STATUS_MESSAGE+": "+moviesJson.getString(TAG_DEBUG_STATUS_MESSAGE));
-            }
-            return  null;
-        }
         JSONArray jsonArray = moviesJson.getJSONArray(TAG_RESULTS);
         ArrayList<Movie> movies = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); ++i) {
@@ -85,18 +77,78 @@ public final class MovieJsonUtils {
                 || !singleMovieJson.has(TAG_TITLE)
                     ||!singleMovieJson.has(TAG_RELEASE_DATE)
                         ||! singleMovieJson.has(TAG_OVERVIEW)
-                            ||! singleMovieJson.has(TAG_VOTE_AVG))
+                            ||! singleMovieJson.has(TAG_VOTE_AVG)
+                                ||! singleMovieJson.has(TAG_ID))
                             {
                 continue;
             }
+            int id = singleMovieJson.getInt(TAG_ID);
             String posterFileName = singleMovieJson.getString(TAG_POSTER_PATH);
             String title = singleMovieJson.getString(TAG_TITLE);
             String releaseDate = singleMovieJson.getString(TAG_RELEASE_DATE);
             String overview = singleMovieJson.getString(TAG_OVERVIEW);
             double avg = singleMovieJson.getDouble(TAG_VOTE_AVG);
-            Movie movie = new Movie(title, posterFileName,releaseDate,avg,overview);
+            Movie movie = new Movie(id,title, posterFileName,releaseDate,avg,overview);
             movies.add(movie);
         }
         return  movies;
     }
+
+    public static ArrayList<Trailer> getTrailersFromJson(String trailersJsonStr) throws JSONException{
+        final String TRAILER = "Trailer";
+        final String TAG_NAME = "name";
+        final String TAG_KEY = "key";
+        final String TAG_SITE = "site";
+        final String TAG_TYPE = "type";
+        final String TAG_SIZE = "size";//int
+        JSONObject trailersJson = new JSONObject(trailersJsonStr);
+        if (validate(trailersJson))
+            return null;
+        JSONArray jsonArray = trailersJson.getJSONArray(TAG_RESULTS);
+        ArrayList<Trailer> trailers = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); ++i) {
+            JSONObject singleTrailerJson = jsonArray.getJSONObject(i);
+            //this shouldn't happen
+            if (singleTrailerJson == null) {
+                continue;
+            }
+
+            //If for some reason there is no poster or title then I skip;
+            if (!singleTrailerJson.has(TAG_SITE)
+                    || !singleTrailerJson.has(TAG_TYPE)
+                    || !singleTrailerJson.has(TAG_SIZE)
+                    || !singleTrailerJson.has(TAG_KEY)
+                    || !singleTrailerJson.has(TAG_NAME)) {
+                continue;
+            }
+
+            String site = singleTrailerJson.getString(TAG_SITE);
+            String type = singleTrailerJson.getString(TAG_TYPE);
+            int size = singleTrailerJson.getInt(TAG_SIZE);
+            String key = singleTrailerJson.getString(TAG_KEY);
+            String name = singleTrailerJson.getString(TAG_NAME);
+            Trailer trailer = new Trailer(name,key,size,type,site);
+            trailers.add(trailer);
+        }
+        return trailers;
+    }
+
+    private static boolean validate(JSONObject moviesJson) throws JSONException {
+    /* Is there an error when we have no results? */
+        if(!moviesJson.has(TAG_RESULTS)){
+            if(moviesJson.has(TAG_DEBUG_SUCCESS)){
+                Log.v(TAG, TAG_DEBUG_SUCCESS+": "+ String.valueOf(moviesJson.getBoolean(TAG_DEBUG_SUCCESS)));
+            }
+            if(moviesJson.has(TAG_DEBUG_STATUS_CODE)){
+                Log.v(TAG, TAG_DEBUG_STATUS_CODE+": "+moviesJson.getInt(TAG_DEBUG_STATUS_CODE));
+            }
+            if(moviesJson.has(TAG_DEBUG_STATUS_MESSAGE)){
+                Log.v(TAG, TAG_DEBUG_STATUS_MESSAGE+": "+moviesJson.getString(TAG_DEBUG_STATUS_MESSAGE));
+            }
+            return true;
+        }
+        return false;
+    }
+
+
 }

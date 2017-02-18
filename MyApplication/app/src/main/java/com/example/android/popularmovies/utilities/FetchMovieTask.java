@@ -18,8 +18,6 @@ package com.example.android.popularmovies.utilities;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v4.content.AsyncTaskLoader;
-import android.view.View;
 
 
 import com.example.android.popularmovies.Movie;
@@ -32,7 +30,6 @@ import java.util.ArrayList;
 public class FetchMovieTask extends AsyncTask<Boolean,Void,ArrayList<Movie>> {
 
     private int mPage;
-    private ArrayList<Movie> mMovies;
     private MoviesAdapter.SORT_MODE mSortMode;
     private Context mContext;
     private ICallbackMovieTask mCallbackMovieTask;
@@ -75,9 +72,8 @@ public class FetchMovieTask extends AsyncTask<Boolean,Void,ArrayList<Movie>> {
     @Override
     protected ArrayList<Movie> doInBackground(Boolean... params) {
 
-
         String apiKey = mContext.getResources().getString(R.string.api_key_the_movie_db);
-        URL movieRequestUrl = NetworkUtils.buildUrl(mPage, mSortMode, apiKey);
+        URL movieRequestUrl = NetworkUtils.buildUrlToRequestPage(mPage, mSortMode, apiKey);
 
         try {
             String jsonMovieResponse = NetworkUtils
