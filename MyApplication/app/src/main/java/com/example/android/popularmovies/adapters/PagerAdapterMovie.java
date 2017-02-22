@@ -15,13 +15,13 @@
  *
  */
 
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.adapters;
 
-import android.os.Bundle;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.view.View;
+
 
 import java.util.ArrayList;
 

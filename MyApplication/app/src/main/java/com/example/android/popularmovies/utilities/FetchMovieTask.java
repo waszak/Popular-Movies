@@ -17,32 +17,28 @@
 package com.example.android.popularmovies.utilities;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
-
-import com.example.android.popularmovies.Movie;
-import com.example.android.popularmovies.MoviesAdapter;
+import com.example.android.popularmovies.models.Movie;
+import com.example.android.popularmovies.adapters.MoviesAdapter;
 import com.example.android.popularmovies.R;
 
 import java.net.URL;
 import java.util.ArrayList;
 
-public class FetchMovieTask extends AsyncTask<Boolean,Void,ArrayList<Movie>> {
+public class FetchMovieTask extends AbstractAsyncTask<Boolean,Void,ArrayList<Movie>> {
 
     private int mPage;
     private MoviesAdapter.SORT_MODE mSortMode;
     private Context mContext;
-    private ICallbackMovieTask mCallbackMovieTask;
 
-    public FetchMovieTask(Context context, int page){
+    public interface ICallbackMovieTask extends ICallbackTask<ArrayList<Movie>>{
+    };
+
+    private FetchMovieTask(Context context, int page){
         mPage = page;
         mContext = context;
     }
-    public interface ICallbackMovieTask{
-        void onStart();
-        void onSuccess(ArrayList<Movie>movies);
-        void onError();
-    }
+
     public static FetchMovieTask with(Context context){
         return new FetchMovieTask(context,1);
     }
@@ -56,17 +52,6 @@ public class FetchMovieTask extends AsyncTask<Boolean,Void,ArrayList<Movie>> {
     public FetchMovieTask setOrder(MoviesAdapter.SORT_MODE sortMode){
         mSortMode = sortMode;
         return  this;
-    }
-
-    public FetchMovieTask setCallback(ICallbackMovieTask callbackMovieTask){
-        mCallbackMovieTask = callbackMovieTask;
-        return this;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        mCallbackMovieTask.onStart();
     }
 
     @Override
@@ -87,12 +72,4 @@ public class FetchMovieTask extends AsyncTask<Boolean,Void,ArrayList<Movie>> {
         }
     }
 
-    @Override
-    protected void onPostExecute(ArrayList<Movie> movies) {
-        if (movies != null) {
-            mCallbackMovieTask.onSuccess(movies);
-        } else {
-            mCallbackMovieTask.onError();
-        }
-    }
 }

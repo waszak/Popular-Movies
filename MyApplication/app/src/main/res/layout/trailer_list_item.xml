@@ -22,7 +22,7 @@
               android:layout_height="wrap_content"
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:padding="8dp"
-              tools:context="com.example.android.popularmovies.MovieTrailersFragment">
+              tools:context="com.example.android.popularmovies.fragments.MovieTrailersFragment">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"

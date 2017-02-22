@@ -15,12 +15,12 @@
  *
  */
 
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.viewmodels;
 
-import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.widget.ImageView;
 
+import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 

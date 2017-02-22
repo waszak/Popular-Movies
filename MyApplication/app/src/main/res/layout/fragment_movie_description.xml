@@ -18,8 +18,8 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
-    <data class =".MovieBinding" >
-        <variable name="viewModel" type="com.example.android.popularmovies.MovieDescriptionViewModel"/>
+    <data class =".fragments.MovieBinding" >
+        <variable name="viewModel" type="com.example.android.popularmovies.viewmodels.MovieDescriptionViewModel"/>
     </data>
 
     <ScrollView
@@ -29,7 +29,7 @@
                       android:orientation="vertical"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      tools:context="com.example.android.popularmovies.MovieDescriptionFragment">
+                      tools:context="com.example.android.popularmovies.fragments.MovieDescriptionFragment">
 
 
             <android.support.v7.widget.CardView

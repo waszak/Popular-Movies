@@ -15,7 +15,7 @@
  *
  */
 
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -32,19 +32,22 @@ public class Movie implements Parcelable {
     private final String mReleaseDate;
     private final double mVoteAverage;
     private final String mPlotSynopsis;
+    private final String mBackDrop;
     private final int mId;
 
-    public Movie(int iD,String title, String posterFileName, String ReleaseDate, double voteAverage, String plotSynopsis){
+    public Movie(int iD,String title, String posterFileName, String releaseDate, double voteAverage,
+                 String plotSynopsis, String backdrop){
         mTitle = title;
         mPosterFileName = posterFileName;
-        mReleaseDate = ReleaseDate;
+        mReleaseDate = releaseDate;
         mVoteAverage = voteAverage;
         mPlotSynopsis = plotSynopsis;
+        mBackDrop = backdrop;
         mId = iD;
     }
 
     public Movie(Parcel in){
-        String[] data= new String[6];
+        String[] data= new String[7];
         in.readStringArray(data);
 
         mTitle= data[0];
@@ -53,12 +56,17 @@ public class Movie implements Parcelable {
         mVoteAverage = Float.parseFloat(data[3]);
         mPlotSynopsis = data[4];
         mId = Integer.parseInt(data[5]);
+        mBackDrop = data[6];
     }
 
     public int getId(){ return mId; }
 
     public String getPosterFileName(){
         return mPosterFileName;
+    }
+
+    public String getBackDropFileName(){
+        return mBackDrop;
     }
 
     public String getTitle(){
@@ -82,7 +90,7 @@ public class Movie implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeStringArray(new String[]{mTitle,mPosterFileName, mReleaseDate,
-                Double.toString(mVoteAverage), mPlotSynopsis, Integer.toString(mId)});
+                Double.toString(mVoteAverage), mPlotSynopsis, Integer.toString(mId), mBackDrop});
     }
 
     public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {

@@ -19,7 +19,7 @@ package com.example.android.popularmovies.utilities;
 
 import android.net.Uri;
 
-import com.example.android.popularmovies.MoviesAdapter;
+import com.example.android.popularmovies.adapters.MoviesAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,8 +47,6 @@ public class NetworkUtils {
     final static private String VIDEOS = "/%d/videos";
 
     final static private String REVIEWS = "/%d/reviews";
-
-    final static private String IMAGES = "/%d/images";
 
     /**
      * Builds the URL used to query The Movie DB
@@ -125,17 +123,6 @@ public class NetworkUtils {
      */
     public static URL buildReviewsURL(int movieId, String apiKey){
         return buildUrl(String.format(REVIEWS,movieId), apiKey);
-    }
-
-    /**
-     * Builds the URL used to query The Movie DB
-     *
-     * @param movieId id of movie to query.
-     * @param apiKey Api key to access The Movie DB.
-     * @return The URL to use to query the The Movie DB.
-     */
-    public static URL buildImagesURL(int movieId, String apiKey){
-        return buildUrl(String.format(IMAGES,movieId), apiKey);
     }
 
     /**

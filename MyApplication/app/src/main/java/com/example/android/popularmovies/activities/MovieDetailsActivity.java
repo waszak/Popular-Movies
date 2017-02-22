@@ -15,24 +15,22 @@
  *
  */
 
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.activities;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.example.android.popularmovies.utilities.NetworkUtils;
-import com.squareup.picasso.Picasso;
+import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.adapters.PagerAdapterMovie;
+import com.example.android.popularmovies.fragments.MovieDescriptionFragment;
+import com.example.android.popularmovies.fragments.MovieReviewsFragment;
+import com.example.android.popularmovies.fragments.MovieTrailersFragment;
+import com.example.android.popularmovies.models.Movie;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,12 +39,6 @@ import butterknife.ButterKnife;
 * Details activity shows detailed information about selected movie.
 */
 public class MovieDetailsActivity extends AppCompatActivity {
-
-
-    /*@BindView(R.id.tv_title) TextView mTitle;
-    @BindView(R.id.tv_synopsis) TextView mSynopsis;
-    @BindView(R.id.tv_score) TextView mScore;
-    @BindView(R.id.tv_release_date) TextView mReleaseYear;*/
 
     @BindView(R.id.view_pager) ViewPager mViewPager;
     @BindView(R.id.tab_layout) TabLayout mTabLayout;
@@ -99,16 +91,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
             }
         });
-
-        /*mTabLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mTabLayout.setupWithViewPager(mViewPager);
-            }
-        });*/
-
-
-
 
     }
 }

@@ -15,7 +15,7 @@
  *
  */
 
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

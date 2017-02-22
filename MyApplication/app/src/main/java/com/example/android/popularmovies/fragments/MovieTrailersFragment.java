@@ -15,7 +15,7 @@
  *
  */
 
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.fragments;
 
 
 import android.os.Bundle;
@@ -26,11 +26,14 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.android.popularmovies.models.Movie;
+import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.models.Trailer;
+import com.example.android.popularmovies.adapters.TrailerAdapter;
 import com.example.android.popularmovies.utilities.MovieJsonUtils;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 

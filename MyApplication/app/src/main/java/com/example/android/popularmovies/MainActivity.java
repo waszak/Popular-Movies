@@ -20,9 +20,6 @@ package com.example.android.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
-import android.os.PersistableBundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,6 +31,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.activities.MovieDetailsActivity;
+import com.example.android.popularmovies.adapters.MoviesAdapter;
+import com.example.android.popularmovies.core.ScrollListener;
+import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.utilities.FetchMovieTask;
 
 import java.util.ArrayList;

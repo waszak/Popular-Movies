@@ -15,7 +15,7 @@
  *
  */
 
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.fragments;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -25,7 +25,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import  com.example.android.popularmovies.MovieBinding;
+
+import com.example.android.popularmovies.models.Movie;
+import com.example.android.popularmovies.viewmodels.MovieDescriptionViewModel;
+import com.example.android.popularmovies.R;
+
 /**
  * A simple {@link Fragment} subclass.
  */
