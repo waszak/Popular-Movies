@@ -20,55 +20,115 @@ package com.example.android.popularmovies.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Waszak on 20.02.2017.
  */
 
-public class Trailer implements Parcelable {
+public class Trailer implements Parcelable  {
 
-    private String mName;
-    private String mKey;
-    private int mSize;
-    private String mType;
-    private String mSite;
+    @SerializedName("id")
+    @Expose
+    private String id;
 
-    public  Trailer(String name,String key,int size,String type,String site){
-        mName = name;
-        mKey = key;
-        mSize = size;
-        mType = type;
-        mSite = site;
+    @SerializedName("key")
+    @Expose
+    private String key;
+    @SerializedName("name")
+    @Expose
+    private String name;
+    @SerializedName("site")
+    @Expose
+    private String site;
+    @SerializedName("size")
+    @Expose
+    private Integer size;
+    @SerializedName("type")
+    @Expose
+    private String type;
+
+    public String getId() {
+        return id;
     }
 
-    public String getKey(){
-        return mKey;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getName(){
-        return mName;
+    public String getKey() {
+        return key;
     }
 
-    public String getDescription(){
-        return mSite+" "+mSize+"p";
+    public void setKey(String key) {
+        this.key = key;
     }
 
-    public String getType(){
-        return mType;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSite() {
+        return site;
+    }
+
+    public void setSite(String site) {
+        this.site = site;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
 
-    public Trailer(Parcel in) {
-        String[] data= new String[5];
-        in.readStringArray(data);
-
-        mName= data[0];
-        mKey= data[1];
-        mSize = Integer.parseInt(data[2]);
-        mType = data[3];
-        mSite = data[4];
+    protected Trailer(Parcel in) {
+        id = in.readString();
+        key = in.readString();
+        name = in.readString();
+        site = in.readString();
+        size = in.readByte() == 0x00 ? null : in.readInt();
+        type = in.readString();
     }
 
-    public static final Creator<Trailer> CREATOR = new Creator<Trailer>() {
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(key);
+        dest.writeString(name);
+        dest.writeString(site);
+        if (size == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(size);
+        }
+        dest.writeString(type);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Trailer> CREATOR = new Parcelable.Creator<Trailer>() {
         @Override
         public Trailer createFromParcel(Parcel in) {
             return new Trailer(in);
@@ -80,14 +140,8 @@ public class Trailer implements Parcelable {
         }
     };
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[]{mName,mKey, Integer.toString(mSize),
-                mType, mSite});
+    public String getDescription(){
+        return getSite()+" "+getSize()+"p";
     }
 }
+

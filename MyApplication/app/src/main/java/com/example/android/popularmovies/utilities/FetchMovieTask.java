@@ -21,8 +21,9 @@ import android.content.Context;
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.adapters.MoviesAdapter;
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.models.Results;
 
-import java.net.URL;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class FetchMovieTask extends AbstractAsyncTask<Boolean,Void,ArrayList<Movie>> {
@@ -32,7 +33,7 @@ public class FetchMovieTask extends AbstractAsyncTask<Boolean,Void,ArrayList<Mov
     private Context mContext;
 
     public interface ICallbackMovieTask extends ICallbackTask<ArrayList<Movie>>{
-    };
+    }
 
     private FetchMovieTask(Context context, int page){
         mPage = page;
@@ -56,20 +57,20 @@ public class FetchMovieTask extends AbstractAsyncTask<Boolean,Void,ArrayList<Mov
 
     @Override
     protected ArrayList<Movie> doInBackground(Boolean... params) {
-
         String apiKey = mContext.getResources().getString(R.string.api_key_the_movie_db);
-        URL movieRequestUrl = NetworkUtils.buildUrlToRequestPage(mPage, mSortMode, apiKey);
-
+        Results<Movie> results;
         try {
-            String jsonMovieResponse = NetworkUtils
-                    .getResponseFromHttpUrl(movieRequestUrl);
-
-            return MovieJsonUtils
-                    .getMoviesFromJson(jsonMovieResponse);
-        } catch (Exception e) {
+            if (mSortMode == MoviesAdapter.SORT_MODE.MOST_POPULAR) {
+                results = NetworkUtils.buildRetrofit().loadPopular(mPage, apiKey).execute().body();
+            } else {
+                results = NetworkUtils.buildRetrofit().loadTopRated(mPage, apiKey).execute().body();
+            }
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+        return new ArrayList<>(results.getResults());
     }
 
 }

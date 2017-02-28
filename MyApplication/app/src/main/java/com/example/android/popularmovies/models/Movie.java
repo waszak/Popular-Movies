@@ -20,6 +20,9 @@ package com.example.android.popularmovies.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /*
 * Class represents movie object. That was create from Json.
 *
@@ -27,12 +30,33 @@ import android.os.Parcelable;
 public class Movie implements Parcelable {
 
     public static final String TAG =  Movie.class.getSimpleName();
+
+    @SerializedName("title")
+    @Expose
     private final String mTitle;
+
+    @SerializedName("poster_path")
+    @Expose
     private final String mPosterFileName;
+
+    @SerializedName("release_date")
+    @Expose
     private final String mReleaseDate;
+
+    @SerializedName("vote_average")
+    @Expose
     private final double mVoteAverage;
+
+    @SerializedName("overview")
+    @Expose
     private final String mPlotSynopsis;
+
+    @SerializedName("backdrop_path")
+    @Expose
     private final String mBackDrop;
+
+    @SerializedName("id")
+    @Expose
     private final int mId;
 
     public Movie(int iD,String title, String posterFileName, String releaseDate, double voteAverage,

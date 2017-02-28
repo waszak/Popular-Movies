@@ -26,31 +26,36 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.models.Results;
 import com.example.android.popularmovies.models.Trailer;
 import com.example.android.popularmovies.adapters.TrailerAdapter;
-import com.example.android.popularmovies.utilities.MovieJsonUtils;
+import com.example.android.popularmovies.utilities.ITheMovieDbApi;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 
-import java.net.URL;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Response;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MovieTrailersFragment extends Fragment implements LoaderManager.LoaderCallbacks<ArrayList<Trailer>>,
+public class MovieTrailersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Results<Trailer>>,
           TrailerAdapter.TrailerAdapterOnClickHandler{
 
     private final static int LOADER_ID = 0;
+    private final static String TAG = MovieTrailersFragment.class.getSimpleName();
 
     private Movie mMovie;
     private TrailerAdapter mTrailerAdapter;
@@ -98,21 +103,21 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
     }
 
     @Override
-    public Loader<ArrayList<Trailer>> onCreateLoader(int id, Bundle args) {
-        return new AsyncTaskLoader<ArrayList<Trailer>>(getContext()) {
+    public Loader<Results<Trailer>> onCreateLoader(int id, Bundle args) {
+        final ITheMovieDbApi theMovieDbApi = NetworkUtils.buildRetrofit();
+        final String apiKey = getContext().getResources().getString(R.string.api_key_the_movie_db);
+
+        return new AsyncTaskLoader<Results<Trailer>>(getContext()) {
             @Override
-            public ArrayList<Trailer> loadInBackground() {
-                String apiKey = getContext().getResources().getString(R.string.api_key_the_movie_db);
-                URL movieRequestUrl = NetworkUtils.buildVideosURL(mMovie.getId(),apiKey);
+            public Results<Trailer> loadInBackground() {
 
+                Call<Results<Trailer>> call = theMovieDbApi.loadTrailers(mMovie.getId(),apiKey);
                 try {
-                    String jsonMovieResponse = NetworkUtils
-                            .getResponseFromHttpUrl(movieRequestUrl);
-
-                    return MovieJsonUtils
-                            .getTrailersFromJson(jsonMovieResponse);
-                } catch (Exception e) {
+                    Response<Results<Trailer>> res = call.execute();
+                    return res.body();
+                } catch (IOException e) {
                     e.printStackTrace();
+                    Log.e(TAG, "loadInBackground: "+e.toString() );
                     return null;
                 }
             }
@@ -120,12 +125,12 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoadFinished(Loader<ArrayList<Trailer>> loader, ArrayList<Trailer> data) {
-       mTrailerAdapter.setTrailersData(data);
+    public void onLoadFinished(Loader<Results<Trailer>> loader, Results<Trailer> data) {
+       mTrailerAdapter.setTrailersData(new ArrayList<>(data.getResults()));
     }
 
     @Override
-    public void onLoaderReset(Loader<ArrayList<Trailer>> loader) {
+    public void onLoaderReset(Loader<Results<Trailer>> loader) {
 
     }
 

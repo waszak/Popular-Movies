@@ -30,7 +30,7 @@ import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 import java.util.ArrayList;
 
@@ -92,9 +92,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     @Override
     public void onBindViewHolder(final MovieViewHolder holder, int position) {
         Movie movie = mMovies.get(position);
-        String url = NetworkUtils.buildPosterStringUrl(movie.getPosterFileName());
-
-        Picasso.with(holder.mContext).load(url).into(holder.mImageViewMovie, new Callback() {
+        RequestCreator request = NetworkUtils.buildPosterRequest(holder.mContext,movie.getPosterFileName());
+        request.into(holder.mImageViewMovie, new Callback() {
             @Override
             public void onSuccess() {
                 holder.mImageViewMovie.setVisibility(View.VISIBLE);
@@ -105,6 +104,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
             @Override
             public void onError() {
                 holder.mErrorTextView.setVisibility(View.VISIBLE);
+                holder.mProgressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -197,6 +197,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         if(mMovies == null){
             return null;
         }
-        return new ArrayList<Movie>(mMovies);
+        return new ArrayList<>(mMovies);
     }
 }

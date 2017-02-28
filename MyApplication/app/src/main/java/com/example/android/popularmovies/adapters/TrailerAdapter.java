@@ -29,7 +29,7 @@ import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.models.Trailer;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 import java.util.ArrayList;
 
@@ -84,11 +84,11 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
     @Override
     public void onBindViewHolder(final TrailerViewHolder holder, int position) {
         Trailer trailer = mTrailers.get(position);
-        String url = NetworkUtils.buildThumbnailUrl(trailer.getKey());
+        RequestCreator request = NetworkUtils.buildThumbnailRequest(holder.mContext,trailer.getKey());
         holder.mTextViewTitle.setText(trailer.getName());
         holder.mTextViewType.setText(trailer.getType());
         holder.mTextViewDescription.setText(trailer.getDescription());
-        Picasso.with(holder.mContext).load(url).into(holder.mImageViewMovie, new Callback() {
+        request.into(holder.mImageViewMovie, new Callback() {
             @Override
             public void onSuccess() {
                 holder.mImageViewMovie.setVisibility(View.VISIBLE);
@@ -174,6 +174,6 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         if(mTrailers == null){
             return null;
         }
-        return new ArrayList<Trailer>(mTrailers);
+        return new ArrayList<>(mTrailers);
     }
 }

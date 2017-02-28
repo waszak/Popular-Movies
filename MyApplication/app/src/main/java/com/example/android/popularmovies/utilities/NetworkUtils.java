@@ -17,16 +17,17 @@
 
 package com.example.android.popularmovies.utilities;
 
-import android.net.Uri;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
-import com.example.android.popularmovies.adapters.MoviesAdapter;
+import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Scanner;
+import okhttp3.Cache;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
@@ -36,93 +37,36 @@ public class NetworkUtils {
 
     final static private String THE_MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/movie";
     final static private String POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185/";
-    final static private String YOUTUBE_THUMBNAIL="https://img.youtube.com/vi/%s/hqdefault.jpg";
-
-    final static private String PARAM_API_KEY= "api_key";
-    final static private String PARAM_PAGE= "page";
-
-    final static private String TOP_RATED ="/top_rated";
-    final static private String POPULARITY = "/popular";
-
-    final static private String VIDEOS = "/%d/videos";
-
-    final static private String REVIEWS = "/%d/reviews";
+    final static private String YOUTUBE_THUMBNAIL = "https://img.youtube.com/vi/%s/hqdefault.jpg";
 
     /**
-     * Builds the URL used to query The Movie DB
+     * Create retrofit instance to query.
      *
-     * @param apiKey Api key to access The Movie DB.
-     * @return The URL to use to query the The Movie DB.
+     * @return The ITheMovieDbApi to use to query the The Movie DB.
      */
-    public static URL buildUrlToRequestPage(int page, MoviesAdapter.SORT_MODE sortMode, String apiKey ) {
-        String sortBy;
-        switch (sortMode){
-            case MOST_POPULAR:
-                sortBy = POPULARITY;
-                break;
-            case TOP_RATED:
-            default:
-                sortBy = TOP_RATED;
-                break;
+    private static Retrofit retrofit;
+    public static ITheMovieDbApi buildRetrofit() {
+        if(retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(THE_MOVIE_DB_BASE_URL + "/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
         }
-        Uri.Builder builder = Uri.parse(THE_MOVIE_DB_BASE_URL+sortBy).buildUpon()
-                .appendQueryParameter(PARAM_API_KEY, apiKey)
-                .appendQueryParameter(PARAM_PAGE,Integer.toString(page));
-
-        Uri builtUri = builder.build();
-        URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        return url;
+        return  retrofit.create(ITheMovieDbApi.class);
     }
 
-    /**
-     * Builds the URL used to query The Movie DB
-     *
-     * @param additionalPath to request more details from movie.
-     * @param apiKey Api key to access The Movie DB.
-     * @return The URL to use to query the The Movie DB.
-     */
-    private static URL buildUrl(String additionalPath,String apiKey ) {
-
-        Uri.Builder builder = Uri.parse(THE_MOVIE_DB_BASE_URL+additionalPath).buildUpon()
-                .appendQueryParameter(PARAM_API_KEY, apiKey);
-
-        Uri builtUri = builder.build();
-        URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+    private static final int CACHE_SIZE = 60 * 1024 * 1024;
+    private static boolean sIsPicassoSingletonSet;
+    public static Picasso getPicasso(Context context){
+        if(!sIsPicassoSingletonSet) {
+            Cache cache = new Cache(context.getCacheDir(), CACHE_SIZE);
+            okhttp3.OkHttpClient okHttp3Client = new okhttp3.OkHttpClient.Builder().cache(cache).build();
+            OkHttp3Downloader downloader = new OkHttp3Downloader(okHttp3Client);
+            Picasso picasso = new Picasso.Builder(context).downloader(downloader).build();
+            Picasso.setSingletonInstance(picasso);
+            sIsPicassoSingletonSet = true;
         }
-
-        return url;
-    }
-
-    /**
-     * Builds the URL used to query The Movie DB
-     *
-     * @param movieId id of movie to query.
-     * @param apiKey Api key to access The Movie DB.
-     * @return The URL to use to query the The Movie DB.
-     */
-    public static URL buildVideosURL(int movieId, String apiKey){
-        return buildUrl(String.format(VIDEOS,movieId), apiKey);
-    }
-
-    /**
-     * Builds the URL used to query The Movie DB
-     *
-     * @param movieId id of movie to query.
-     * @param apiKey Api key to access The Movie DB.
-     * @return The URL to use to query the The Movie DB.
-     */
-    public static URL buildReviewsURL(int movieId, String apiKey){
-        return buildUrl(String.format(REVIEWS,movieId), apiKey);
+        return Picasso.with(context);
     }
 
     /**
@@ -131,38 +75,17 @@ public class NetworkUtils {
      * @param posterFileName File name of poster
      * @return The URL to use to query the The Movie DB.
      */
-    public static String buildPosterStringUrl(String posterFileName) {
-        return POSTER_BASE_URL+posterFileName;
+    public static RequestCreator buildPosterRequest(Context context, String posterFileName) {
+        return getPicasso(context).load(POSTER_BASE_URL+posterFileName);
     }
 
-    public static String buildThumbnailUrl(String youtubeId){
-        return String.format(YOUTUBE_THUMBNAIL, youtubeId);
+    public static RequestCreator buildThumbnailRequest(Context context,String youtubeId){
+        return getPicasso(context).load(String.format(YOUTUBE_THUMBNAIL, youtubeId));
     }
 
-    /**
-     * This method returns the entire result from the HTTP response.
-     *
-     * @param url The URL to fetch the HTTP response from.
-     * @return The contents of the HTTP response.
-     * @throws IOException Related to network and stream reading
-     */
-    public static String getResponseFromHttpUrl(URL url) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        try {
-            InputStream in = urlConnection.getInputStream();
-
-            Scanner scanner = new Scanner(in);
-            scanner.useDelimiter("\\A");
-
-            boolean hasInput = scanner.hasNext();
-            if (hasInput) {
-                return scanner.next();
-            } else {
-                return null;
-            }
-        } finally {
-            urlConnection.disconnect();
-        }
+    public boolean isInternetAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-
 }

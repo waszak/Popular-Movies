@@ -22,7 +22,6 @@ import android.widget.ImageView;
 
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.utilities.NetworkUtils;
-import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -62,7 +61,7 @@ public class MovieDescriptionViewModel {
 
     @BindingAdapter({"imageUrl"})
     public static void loadImage(ImageView view, String imageUrl) {
-        Picasso.with(view.getContext()).load(NetworkUtils.buildPosterStringUrl(imageUrl)).into(view);
+        NetworkUtils.buildPosterRequest(view.getContext(),imageUrl).into(view);
     }
 
 }
