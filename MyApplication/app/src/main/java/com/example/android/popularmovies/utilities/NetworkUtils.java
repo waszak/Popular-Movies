@@ -38,12 +38,10 @@ public class NetworkUtils {
     final static private String THE_MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/movie";
     final static private String POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185/";
     final static private String YOUTUBE_THUMBNAIL = "https://img.youtube.com/vi/%s/hqdefault.jpg";
+    final static private String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=%s";
+    public static final String YOUTUBE = "youtube";
 
-    /**
-     * Create retrofit instance to query.
-     *
-     * @return The ITheMovieDbApi to use to query the The Movie DB.
-     */
+
     private static Retrofit retrofit;
     public static ITheMovieDbApi buildRetrofit() {
         if(retrofit == null) {
@@ -83,9 +81,14 @@ public class NetworkUtils {
         return getPicasso(context).load(String.format(YOUTUBE_THUMBNAIL, youtubeId));
     }
 
-    public boolean isInternetAvailable(Context context) {
+    public static boolean isInternetAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+
+    public static String getYoutubeUrl(String youtubeId ){
+        return  String.format(YOUTUBE_BASE_URL, youtubeId);
+    }
+
 }

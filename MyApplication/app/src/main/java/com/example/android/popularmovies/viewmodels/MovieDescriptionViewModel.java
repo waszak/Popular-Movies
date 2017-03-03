@@ -32,7 +32,7 @@ import java.math.RoundingMode;
 
 public class MovieDescriptionViewModel {
 
-    private Movie mMovie;
+    private final Movie mMovie;
     public MovieDescriptionViewModel(Movie movie){
         mMovie = movie;
     }

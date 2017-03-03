@@ -34,11 +34,7 @@ package com.example.android.popularmovies.tests.data;
  */
 
 import android.content.ContentValues;
-import android.database.ContentObserver;
 import android.database.Cursor;
-import android.net.Uri;
-import android.os.Handler;
-import android.os.HandlerThread;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

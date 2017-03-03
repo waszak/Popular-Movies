@@ -59,29 +59,24 @@ public class Movie implements Parcelable {
     @Expose
     private final int mId;
 
-    public Movie(int iD,String title, String posterFileName, String releaseDate, double voteAverage,
-                 String plotSynopsis, String backdrop){
-        mTitle = title;
-        mPosterFileName = posterFileName;
-        mReleaseDate = releaseDate;
-        mVoteAverage = voteAverage;
-        mPlotSynopsis = plotSynopsis;
-        mBackDrop = backdrop;
-        mId = iD;
-    }
+    private boolean mIsFavourite;
 
     public Movie(Parcel in){
-        String[] data= new String[7];
-        in.readStringArray(data);
-
-        mTitle= data[0];
-        mPosterFileName= data[1];
-        mReleaseDate = data[2];
-        mVoteAverage = Float.parseFloat(data[3]);
-        mPlotSynopsis = data[4];
-        mId = Integer.parseInt(data[5]);
-        mBackDrop = data[6];
+        mTitle= in.readString();
+        mPosterFileName= in.readString();
+        mReleaseDate = in.readString();
+        mVoteAverage = in.readFloat();
+        mPlotSynopsis = in.readString();
+        mId = in.readInt();
+        mBackDrop = in.readString();
+        mIsFavourite = in.readByte() == 1 ? Boolean.TRUE: Boolean.FALSE;
     }
+
+    public void setFavourite(boolean isFavourite){
+        mIsFavourite = isFavourite;
+    }
+
+    public boolean isFavourite(){return  mIsFavourite;}
 
     public int getId(){ return mId; }
 
@@ -113,8 +108,14 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[]{mTitle,mPosterFileName, mReleaseDate,
-                Double.toString(mVoteAverage), mPlotSynopsis, Integer.toString(mId), mBackDrop});
+        dest.writeString(mTitle);
+        dest.writeString(mPosterFileName);
+        dest.writeString(mReleaseDate);
+        dest.writeDouble(mVoteAverage);
+        dest.writeString(mPlotSynopsis);
+        dest.writeInt(mId);
+        dest.writeString(mBackDrop);
+        dest.writeByte((byte)(mIsFavourite ? 1:0));
     }
 
     public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {

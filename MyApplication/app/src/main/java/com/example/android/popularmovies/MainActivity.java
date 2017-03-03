@@ -20,6 +20,8 @@ package com.example.android.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,17 +30,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.FrameLayout;
 
 import com.example.android.popularmovies.activities.MovieDetailsActivity;
 import com.example.android.popularmovies.adapters.MoviesAdapter;
 import com.example.android.popularmovies.core.ScrollListener;
+import com.example.android.popularmovies.fragments.MovieDetailsFragment;
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.utilities.FetchMovieTask;
 
 import java.util.ArrayList;
 
+import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -46,15 +49,14 @@ public class MainActivity extends AppCompatActivity
     implements  MoviesAdapter.MoviesAdapterOnClickHandler{
 
     @BindView(R.id.rv_movies) RecyclerView mMovieList;
-    @BindView(R.id.tv_error_message_display) TextView mErrorMessageDisplay;
-    @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
+    @Nullable @BindView(R.id.placeholder) FrameLayout mPlaceHolder;
+    @BindInt(R.integer.number_of_column) int mNumberOfColumns;
 
     private MoviesAdapter mMoviesAdapter;
     private ScrollListener mScrollListener;
     private GridLayoutManager mGridLayoutManager;
     private Parcelable mGridState;
 
-    private static final int NUMBERS_OF_COLUMN = 2;
     private static final String LIST_STATE_KEY = "LIST_STATE_KEY";
     private static final String MOVIES_ADAPTER_STATE = "MOVIES_ADAPTER_STATE";
     private static final String SORT_TOP_RATED = "SORT_TOP_RATED";
@@ -66,8 +68,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        mGridLayoutManager = new GridLayoutManager(this, NUMBERS_OF_COLUMN);
-        mScrollListener= new ScrollListener(mGridLayoutManager) {
+        mGridLayoutManager = new GridLayoutManager(this, mNumberOfColumns);
+        mScrollListener = new ScrollListener(mGridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 loadMoviesData(page+1);
@@ -89,10 +91,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showMoviesDataView() {
-        /* First, make sure the error is invisible */
-        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        /* Then,  hide the loading indicator */
-        mLoadingIndicator.setVisibility(View.INVISIBLE);
         /* Then, make sure the weather data is visible */
         mMovieList.setVisibility(View.VISIBLE);
     }
@@ -101,21 +99,14 @@ public class MainActivity extends AppCompatActivity
         /* First, hide the currently visible data */
         mMovieList.setVisibility(View.INVISIBLE);
         /* Then,  hide the loading indicator */
-        mLoadingIndicator.setVisibility(View.INVISIBLE);
-        /* Then, show the error */
-        mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
     private void loadMoviesData(final int page){
         FetchMovieTask.ICallbackMovieTask callbackMovieTask = new FetchMovieTask.ICallbackMovieTask() {
             @Override
-            public void onStart() {
-                mLoadingIndicator.setVisibility(View.VISIBLE);
-            }
-
+            public void onStart() {}
             @Override
             public void onSuccess(ArrayList<Movie>movies) {
-                mLoadingIndicator.setVisibility(View.INVISIBLE);
                 showMoviesDataView();
                 if(page == 1) {
                     mMoviesAdapter.setMoviesData(movies);
@@ -126,7 +117,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onError() {
-                mLoadingIndicator.setVisibility(View.INVISIBLE);
                 showErrorMessage();
             }
         };
@@ -189,24 +179,19 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClick(Movie movie) {
+        if(mPlaceHolder == null) {
+            Context context = MainActivity.this;
+            Class destinationActivity = MovieDetailsActivity.class;
+            Intent startChildActivityIntent = new Intent(context, destinationActivity);
+            startChildActivityIntent.putExtra(Movie.TAG, movie);
+            startActivity(startChildActivityIntent);
+        }else{
+            MovieDetailsFragment fragment = MovieDetailsFragment.newInstance(movie);
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.placeholder, fragment);
+            ft.commit();
+        }
 
-        Context context = MainActivity.this;
-        /* This is the class that we want to start (and open) when the button is clicked. */
-        Class destinationActivity = MovieDetailsActivity.class;
-        /*
-         * Here, we create the Intent that will start the Activity we specified above in
-         * the destinationActivity variable. The constructor for an Intent also requires a
-         * context, which we stored in the variable named "context".
-         */
-        Intent startChildActivityIntent = new Intent(context, destinationActivity);
-
-        startChildActivityIntent.putExtra(Movie.TAG, movie);
-
-        /*
-         * Once the Intent has been created, we can use Activity's method, "startActivity"
-         * to start the ChildActivity.
-         */
-        startActivity(startChildActivityIntent);
     }
 
     @Override

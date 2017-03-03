@@ -16,13 +16,6 @@
   ~
   -->
 
-<GridLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_movies"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</GridLayout>
+<resources>
+    <integer name="number_of_column">6</integer>
+</resources>

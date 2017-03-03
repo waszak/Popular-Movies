@@ -34,4 +34,11 @@
     <string name="details">Details</string>
     <string name="trailers">Trailers</string>
     <string name="reviews">Reviews</string>
+    <string name="item">Item</string>
+    <string name="easter_egg">https://www.youtube.com/watch?v=dQw4w9WgXcQ</string>
+    <string name="poster">Poster</string>
+    <string name="trailer_thumbnail">Trailer thumbnail</string>
+    <string name="play_sign">Play sign</string>
+
+    <string name="content_authority">com.example.android.popularmovies</string>
 </resources>

@@ -33,11 +33,11 @@ public abstract class ScrollListener extends RecyclerView.OnScrollListener{
     private int mVisibleThreshold = 40;
     private int mCurrentPage = 0;
     private int previousTotalItemCount = 0;
-    private int mStartingPageIndex = 0;
+    private final int mStartingPageIndex = 0;
 
     private boolean loading = true;
 
-    private RecyclerView.LayoutManager mLayoutManager;
+    private final RecyclerView.LayoutManager mLayoutManager;
 
     public ScrollListener(GridLayoutManager layoutManager) {
         this.mLayoutManager = layoutManager;

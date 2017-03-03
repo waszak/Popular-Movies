@@ -30,7 +30,7 @@ public class FetchMovieTask extends AbstractAsyncTask<Boolean,Void,ArrayList<Mov
 
     private int mPage;
     private MoviesAdapter.SORT_MODE mSortMode;
-    private Context mContext;
+    private final Context mContext;
 
     public interface ICallbackMovieTask extends ICallbackTask<ArrayList<Movie>>{
     }

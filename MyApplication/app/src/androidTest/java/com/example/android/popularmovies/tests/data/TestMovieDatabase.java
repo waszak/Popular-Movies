@@ -36,7 +36,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
-import java.util.concurrent.TimeUnit;
 
 import static com.example.android.popularmovies.tests.data.TestUtilities.getStaticIntegerField;
 import static com.example.android.popularmovies.tests.data.TestUtilities.getStaticStringField;
@@ -478,6 +477,7 @@ public class TestMovieDatabase {
                 shouldBeEmptyMovieCursor.getCount());
 
         /* Test is over, close the cursor */
+        shouldBeEmptyMovieCursor.close();
         database.close();
     }
 

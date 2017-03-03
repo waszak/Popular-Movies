@@ -31,7 +31,7 @@ import java.util.ArrayList;
 
 public class PagerAdapterMovie extends FragmentPagerAdapter {
 
-    private ArrayList<Fragment> mTabs;
+    private final ArrayList<Fragment> mTabs;
 
     public PagerAdapterMovie(FragmentManager manager){
         super(manager);

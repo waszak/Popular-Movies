@@ -165,7 +165,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         @BindView(R.id.tv_error_poster_message_display) TextView mErrorTextView;
         @BindView(R.id.pb_poster_loading_indicator)ProgressBar mProgressBar;
 
-        Context mContext;
+        final Context mContext;
         /**
          * Constructor for our ViewHolder. Within this constructor, we get a reference to our
          * TextView,ImageViews and set an onClickListener to listen for clicks. Those will be handled in the

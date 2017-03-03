@@ -30,10 +30,10 @@ import java.util.ArrayList;
 public class FetchReviewsTask extends AbstractAsyncTask<Boolean,Void,ArrayList<Movie>>{
 
     private int mPage;
-    private Context mContext;
+    private final Context mContext;
 
     public interface ICallbackMovieTask extends ICallbackTask<ArrayList<Movie>>{
-    };
+    }
 
     @Override
     protected ArrayList<Movie> doInBackground(Boolean... params) {

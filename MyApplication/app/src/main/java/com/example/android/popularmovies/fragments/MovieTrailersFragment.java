@@ -18,16 +18,25 @@
 package com.example.android.popularmovies.fragments;
 
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -60,6 +69,8 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
     private Movie mMovie;
     private TrailerAdapter mTrailerAdapter;
     @BindView(R.id.rv_trailers) RecyclerView mRecyclerView;
+    private ShareActionProvider mShareAction;
+    private Intent mSharedIntent;
 
     public MovieTrailersFragment() {
         // Required empty public constructor
@@ -79,6 +90,12 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 
         getLoaderManager().initLoader(LOADER_ID, null, this);
         getLoaderManager().getLoader(LOADER_ID).forceLoad();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -126,7 +143,20 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Results<Trailer>> loader, Results<Trailer> data) {
-       mTrailerAdapter.setTrailersData(new ArrayList<>(data.getResults()));
+        if(data != null){
+            ArrayList<Trailer> movies = new ArrayList<>();
+            for (Trailer trailer: data.getResults()) {
+                if (trailer.getSite().toLowerCase().equals(NetworkUtils.YOUTUBE)){
+                    movies.add(trailer);
+                }
+            }
+            mTrailerAdapter.setTrailersData(movies);
+            //mShareAction might be null if called before onCreateOptionMenu
+            mSharedIntent = getShareIntent();
+            if (null != mShareAction) {
+                mShareAction.setShareIntent(mSharedIntent);
+            }
+        }
     }
 
     @Override
@@ -136,6 +166,45 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onClick(Trailer trailer) {
+        startActivity(new Intent(Intent.ACTION_VIEW,
+                Uri.parse(NetworkUtils.getYoutubeUrl(trailer.getKey()))));
+    }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        getActivity().getMenuInflater().inflate(R.menu.movie_details_trailers, menu);
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+        mShareAction = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        if (null != mSharedIntent) {
+            mShareAction.setShareIntent(mSharedIntent);
+        }
+
+    }
+
+    private Intent getShareIntent() {
+        String msg = getString(R.string.easter_egg);
+        if(!mTrailerAdapter.getList().isEmpty() ) {
+            for(Trailer trailer : mTrailerAdapter.getList()){
+                if(trailer.getSite().toLowerCase().equals( NetworkUtils.YOUTUBE)){
+                    msg = NetworkUtils.getYoutubeUrl( trailer.getKey());
+                    break;
+                }
+            }
+
+        }
+
+        Intent shareIntent = ShareCompat.IntentBuilder.from(getActivity())
+                .setType("text/plain")
+                .setText(msg)
+                .getIntent();
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        }
+        else{
+            shareIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+
+        return shareIntent;
     }
 }

@@ -142,7 +142,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         @BindView(R.id.tv_trailer_type) TextView mTextViewType;
         @BindView(R.id.tv_trailer_desc) TextView mTextViewDescription;
 
-        Context mContext;
+        final Context mContext;
         /**
          * Constructor for our ViewHolder. Within this constructor, we get a reference to our
          * TextView,ImageViews and set an onClickListener to listen for clicks. Those will be handled in the
