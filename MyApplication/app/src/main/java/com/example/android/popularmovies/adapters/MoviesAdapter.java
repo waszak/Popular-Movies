@@ -40,6 +40,20 @@ import butterknife.ButterKnife;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
 
+    public void removeMovie(Movie movieToDelete) {
+        int position = 0;
+        for (Movie movie: mMovies) {
+            if( movie.equals(movieToDelete)){
+                break;
+            }
+            position++;
+        }
+        if(position < mMovies.size()) {
+            mMovies.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+
     public enum SORT_MODE{
         TOP_RATED(0),
         MOST_POPULAR(1);

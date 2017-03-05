@@ -33,31 +33,31 @@ public class Movie implements Parcelable {
 
     @SerializedName("title")
     @Expose
-    private final String mTitle;
+    private String mTitle;
 
     @SerializedName("poster_path")
     @Expose
-    private final String mPosterFileName;
+    private String mPosterFileName;
 
     @SerializedName("release_date")
     @Expose
-    private final String mReleaseDate;
+    private String mReleaseDate;
 
     @SerializedName("vote_average")
     @Expose
-    private final float mVoteAverage;
+    private float mVoteAverage;
 
     @SerializedName("overview")
     @Expose
-    private final String mPlotSynopsis;
+    private String mPlotSynopsis;
 
     @SerializedName("backdrop_path")
     @Expose
-    private final String mBackDrop;
+    private String mBackDrop;
 
     @SerializedName("id")
     @Expose
-    private final int mId;
+    private int mId;
 
     private boolean mIsFavourite;
 
@@ -70,6 +70,10 @@ public class Movie implements Parcelable {
         mId = in.readInt();
         mBackDrop = in.readString();
         mIsFavourite = in.readByte() == 1 ? Boolean.TRUE: Boolean.FALSE;
+    }
+
+    public Movie(){
+
     }
 
     public void setFavourite(boolean isFavourite){
@@ -130,4 +134,32 @@ public class Movie implements Parcelable {
             return new Movie[size];
         }
     };
+
+    public void setTitle(String title) {
+        mTitle = title;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        mReleaseDate = releaseDate;
+    }
+
+    public void setPlotSynopsis(String plotSynopsis) {
+        mPlotSynopsis = plotSynopsis;
+    }
+
+    public void setId(int id) {
+        mId = id;
+    }
+
+    public void setScore(float score) {
+        mVoteAverage = score;
+    }
+
+    public void setBackDropFileName(String backDropFileName) {
+        mBackDrop = backDropFileName;
+    }
+
+    public void setPosterFileName(String posterFileName) {
+        mPosterFileName = posterFileName;
+    }
 }

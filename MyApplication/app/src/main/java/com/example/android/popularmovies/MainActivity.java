@@ -44,6 +44,7 @@ import com.example.android.popularmovies.data.MoviePreferences;
 import com.example.android.popularmovies.fragments.MovieDetailsFragment;
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.utilities.FetchMovieTask;
+import com.example.android.popularmovies.utilities.FetchMovieTaskDB;
 
 import java.util.ArrayList;
 
@@ -52,8 +53,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
-    implements  MoviesAdapter.MoviesAdapterOnClickHandler,
-        LoaderManager.LoaderCallbacks<Cursor> {
+    implements  MoviesAdapter.MoviesAdapterOnClickHandler {
 
     @BindView(R.id.rv_movies) RecyclerView mMovieList;
     @Nullable @BindView(R.id.placeholder) FrameLayout mPlaceHolder;
@@ -64,21 +64,14 @@ public class MainActivity extends AppCompatActivity
     private GridLayoutManager mGridLayoutManager;
     //private Parcelable mGridState;
 
-    private static final String LIST_STATE_KEY = "LIST_STATE_KEY";
+   /* private static final String LIST_STATE_KEY = "LIST_STATE_KEY";
     private static final String MOVIES_ADAPTER_STATE = "MOVIES_ADAPTER_STATE";
     private static final String SORT_TOP_RATED = "SORT_TOP_RATED";
-    private static final String CURRENT_PAGE = "CURRENT_PAGE";
-    private static final int ID_FAVORITE_LOADER = 67;
+    private static final String CURRENT_PAGE = "CURRENT_PAGE";*/
 
-    public static final String[] MOVIE_DETAIL_PROJECTION = {
-            MovieContract.MovieEntry.COLUMN_MOVIE_ID,
-            MovieContract.MovieEntry.COLUMN_TITLE,
-            MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS,
-            MovieContract.MovieEntry.COLUMN_SCORE,
-            MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
-            MovieContract.MovieEntry.COLUMN_BACKDROP,
-            MovieContract.MovieEntry.COLUMN_POSTER
-    };
+    public static final int MOVIE_DETAILS_REQUEST = 1;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +83,9 @@ public class MainActivity extends AppCompatActivity
         mScrollListener = new ScrollListener(mGridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                loadMoviesData(page+1);
+                if(!MoviePreferences.getFavorites(MainActivity.this)){
+                    loadMoviesData(page+1);
+                }
             }
 
         };
@@ -136,12 +131,15 @@ public class MainActivity extends AppCompatActivity
                 showErrorMessage();
             }
         };
-
-        FetchMovieTask.with(this)
-                .setOrder(MoviePreferences.getSortMode(this))
-                .setPage(page)
-                .setCallback(callbackMovieTask)
-                .execute();
+        if(!MoviePreferences.getFavorites(this)) {
+            FetchMovieTask.with(this)
+                    .setOrder(MoviePreferences.getSortMode(this))
+                    .setPage(page)
+                    .setCallback(callbackMovieTask)
+                    .execute();
+        }else{
+            new FetchMovieTaskDB(this).setCallback(callbackMovieTask).execute();
+        }
     }
     /**
      * This method is used when we are resetting data, so that at one point in time during a
@@ -174,19 +172,19 @@ public class MainActivity extends AppCompatActivity
                 return true;
             case R.id.action_sort_popular:
                 invalidateData();
-                mMoviesAdapter.setSortMode(MoviesAdapter.SORT_MODE.MOST_POPULAR);
-                loadMoviesData(1);
                 setSortModePreferences(MoviesAdapter.SORT_MODE.MOST_POPULAR);
+                loadMoviesData(1);
+
                 return true;
             case R.id.action_top_rated:
                 invalidateData();
-                mMoviesAdapter.setSortMode(MoviesAdapter.SORT_MODE.TOP_RATED);
-                loadMoviesData(1);
                 setSortModePreferences(MoviesAdapter.SORT_MODE.TOP_RATED);
+                loadMoviesData(1);
                 return true;
             case R.id.action_favorites:
                 invalidateData();
                 setFavoritePreferences();
+                loadMoviesData(1);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -215,7 +213,7 @@ public class MainActivity extends AppCompatActivity
             Class destinationActivity = MovieDetailsActivity.class;
             Intent startChildActivityIntent = new Intent(context, destinationActivity);
             startChildActivityIntent.putExtra(Movie.TAG, movie);
-            startActivity(startChildActivityIntent);
+            startActivityForResult(startChildActivityIntent, MOVIE_DETAILS_REQUEST);
         }else{
             MovieDetailsFragment fragment = MovieDetailsFragment.newInstance(movie);
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -225,6 +223,25 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == MOVIE_DETAILS_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                if (intent.hasExtra(Movie.TAG)) {
+                    Movie movieUpdated = intent.getParcelableExtra(Movie.TAG);
+                    for (Movie movie : mMoviesAdapter.getList()) {
+                        if (movie.getId() == movieUpdated.getId()) {
+                            movie.setFavourite(movieUpdated.isFavourite());
+                            if(MoviePreferences.getFavorites(this) && !movie.isFavourite()){
+                                mMoviesAdapter.removeMovie(movie);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     @Override
     protected void onSaveInstanceState(Bundle state) {
 
@@ -275,29 +292,5 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
-        Uri uri = MovieContract.MovieEntry.CONTENT_URI;
-        switch (loaderId) {
-            case ID_FAVORITE_LOADER:
-                return new CursorLoader(this,
-                        uri,
-                        MOVIE_DETAIL_PROJECTION,
-                        null,
-                        null,
-                        null);
-            default:
-                throw new RuntimeException("Loader Not Implemented: " + loaderId);
-        }
-    }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
 }

@@ -24,7 +24,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
+import com.example.android.popularmovies.MainActivity;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.adapters.PagerAdapterMovie;
 import com.example.android.popularmovies.fragments.MovieDescriptionFragment;
@@ -36,13 +38,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /*
-* Details activity shows detailed information about selected movie.
+* Details activity shows detailed information about selected mMovie.
 */
 public class MovieDetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.view_pager) ViewPager mViewPager;
     @BindView(R.id.tab_layout) TabLayout mTabLayout;
     @BindView(R.id.toolbar)  Toolbar mToolbar;
+
+    private Movie mMovie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,13 +70,13 @@ public class MovieDetailsActivity extends AppCompatActivity {
         final PagerAdapterMovie pagerViewAdapterDetails = new PagerAdapterMovie(fragmentManager);
         Intent intentThatStartedThisActivity = getIntent();
 
-        Movie movie = null;
+
         if (intentThatStartedThisActivity.hasExtra(Movie.TAG)) {
-            movie = intentThatStartedThisActivity.getParcelableExtra(Movie.TAG);
+            mMovie = intentThatStartedThisActivity.getParcelableExtra(Movie.TAG);
         }
-        pagerViewAdapterDetails.addTab(MovieDescriptionFragment.newInstance(movie));
+        pagerViewAdapterDetails.addTab(MovieDescriptionFragment.newInstance(mMovie));
         pagerViewAdapterDetails.addTab(new MovieReviewsFragment());
-        pagerViewAdapterDetails.addTab(MovieTrailersFragment.newInstance(movie));
+        pagerViewAdapterDetails.addTab(MovieTrailersFragment.newInstance(mMovie));
         //setOffscreenPageLimit allows us to fetch trailer before going opening it.
         mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());
         mViewPager.setAdapter(pagerViewAdapterDetails);
@@ -94,5 +98,25 @@ public class MovieDetailsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        int itemId = menuItem.getItemId();
+        if (itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(menuItem);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mMovie!= null){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(Movie.TAG, mMovie);
+            setResult(RESULT_OK, intent);
+        }
+        super.onBackPressed();
     }
 }

@@ -18,6 +18,7 @@
 package com.example.android.popularmovies.data;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -86,6 +87,34 @@ public class MovieContract {
             cv.put(COLUMN_BACKDROP, movie.getBackDropFileName());
             cv.put(COLUMN_POSTER, movie.getPosterFileName());
             return cv;
+        }
+
+        public  static  Movie mapToMovie(Cursor cursor){
+            Movie movie = new Movie();
+            int colId = cursor.getColumnIndex(COLUMN_MOVIE_ID);
+            int colTitle = cursor.getColumnIndex(COLUMN_TITLE);
+            int colRelease = cursor.getColumnIndex(COLUMN_RELEASE_DATE);
+            int colPlot = cursor.getColumnIndex(COLUMN_PLOT_SYNOPSIS);
+            int colScore = cursor.getColumnIndex(COLUMN_SCORE);
+            int colBackdrop = cursor.getColumnIndex(COLUMN_BACKDROP);
+            int colPoster = cursor.getColumnIndex(COLUMN_POSTER);
+            if(colId > -1){
+                movie.setId(cursor.getInt(colId));
+            }if(colTitle> -1){
+                movie.setTitle(cursor.getString(colTitle));
+            }if(colRelease > -1){
+                movie.setReleaseDate(cursor.getString(colRelease));
+            }if(colPlot > -1){
+                movie.setPlotSynopsis(cursor.getString(colPlot));
+            }if(colScore > -1){
+                movie.setScore(cursor.getFloat(colPlot));
+            }if(colBackdrop > -1){
+                movie.setBackDropFileName(cursor.getString(colBackdrop));
+            }if(colPoster > -1){
+                movie.setPosterFileName(cursor.getString(colPoster));
+            }
+            movie.setFavourite(true);
+            return movie;
         }
     }
 }
