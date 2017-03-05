@@ -18,6 +18,7 @@
 package com.example.android.popularmovies.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,13 +41,33 @@ import butterknife.ButterKnife;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
 
     public enum SORT_MODE{
-        TOP_RATED,
-        MOST_POPULAR
+        TOP_RATED(0),
+        MOST_POPULAR(1);
+
+        private final int value;
+        SORT_MODE(int value) {
+            this.value = value;
+        }
+
+        public static SORT_MODE getInstance(int id){
+            switch (id){
+                case 0:
+                    return TOP_RATED;
+                case 1:
+                    return MOST_POPULAR;
+                default:
+                    throw new IllegalArgumentException("Enum Id not found: "+id);
+            }
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 
     final private MoviesAdapterOnClickHandler mClickHandler;
 
-    private boolean mTopRated;
+    private SORT_MODE  mSortMode;
     private ArrayList<Movie> mMovies;
 
     public interface MoviesAdapterOnClickHandler {
@@ -55,7 +76,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     public MoviesAdapter(MoviesAdapterOnClickHandler clickHandler){
         mClickHandler = clickHandler;
-        mTopRated = true;
+        mSortMode = SORT_MODE.TOP_RATED;
     }
 
     /**
@@ -109,27 +130,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         });
     }
 
-    public boolean topRated(){
-        return  mTopRated;
-    }
-
-    public boolean popular(){
-        return !mTopRated;
-    }
-
-    public void setTopRated(){
-        if(!mTopRated){
+    public void setSortMode(SORT_MODE sortMode){
+        if(sortMode != mSortMode){
             setMoviesData(null);
         }
-        mTopRated = true;
+        mSortMode = sortMode;
     }
 
-    public void setPopular(){
-        if(mTopRated){
-            setMoviesData(null);
-        }
-        mTopRated = false;
-    }
     @Override
     public int getItemCount() {
         return (mMovies ==  null) ? 0 : mMovies.size();

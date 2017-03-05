@@ -19,9 +19,13 @@ package com.example.android.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
+import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,6 +39,8 @@ import android.widget.FrameLayout;
 import com.example.android.popularmovies.activities.MovieDetailsActivity;
 import com.example.android.popularmovies.adapters.MoviesAdapter;
 import com.example.android.popularmovies.core.ScrollListener;
+import com.example.android.popularmovies.data.MovieContract;
+import com.example.android.popularmovies.data.MoviePreferences;
 import com.example.android.popularmovies.fragments.MovieDetailsFragment;
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.utilities.FetchMovieTask;
@@ -46,7 +52,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
-    implements  MoviesAdapter.MoviesAdapterOnClickHandler{
+    implements  MoviesAdapter.MoviesAdapterOnClickHandler,
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     @BindView(R.id.rv_movies) RecyclerView mMovieList;
     @Nullable @BindView(R.id.placeholder) FrameLayout mPlaceHolder;
@@ -55,12 +62,23 @@ public class MainActivity extends AppCompatActivity
     private MoviesAdapter mMoviesAdapter;
     private ScrollListener mScrollListener;
     private GridLayoutManager mGridLayoutManager;
-    private Parcelable mGridState;
+    //private Parcelable mGridState;
 
     private static final String LIST_STATE_KEY = "LIST_STATE_KEY";
     private static final String MOVIES_ADAPTER_STATE = "MOVIES_ADAPTER_STATE";
     private static final String SORT_TOP_RATED = "SORT_TOP_RATED";
     private static final String CURRENT_PAGE = "CURRENT_PAGE";
+    private static final int ID_FAVORITE_LOADER = 67;
+
+    public static final String[] MOVIE_DETAIL_PROJECTION = {
+            MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+            MovieContract.MovieEntry.COLUMN_TITLE,
+            MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS,
+            MovieContract.MovieEntry.COLUMN_SCORE,
+            MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
+            MovieContract.MovieEntry.COLUMN_BACKDROP,
+            MovieContract.MovieEntry.COLUMN_POSTER
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,22 +101,20 @@ public class MainActivity extends AppCompatActivity
         mMoviesAdapter = new MoviesAdapter(this);
         mMovieList.setAdapter(mMoviesAdapter);
         mMovieList.addOnScrollListener(mScrollListener);
-        if(mGridState != null){
+        mMoviesAdapter.setSortMode(MoviePreferences.getSortMode(this));
+        /*if(mGridState != null){
             onRestoreInstanceState(savedInstanceState);
-        }else {
+        }else {*/
             loadMoviesData(1);
-        }
+        //}
     }
 
     private void showMoviesDataView() {
-        /* Then, make sure the weather data is visible */
         mMovieList.setVisibility(View.VISIBLE);
     }
 
     private void showErrorMessage() {
-        /* First, hide the currently visible data */
         mMovieList.setVisibility(View.INVISIBLE);
-        /* Then,  hide the loading indicator */
     }
 
     private void loadMoviesData(final int page){
@@ -120,14 +136,9 @@ public class MainActivity extends AppCompatActivity
                 showErrorMessage();
             }
         };
-        MoviesAdapter.SORT_MODE sortMode;
-        if(mMoviesAdapter.popular()){
-            sortMode = MoviesAdapter.SORT_MODE.MOST_POPULAR;
-        }else{
-            sortMode = MoviesAdapter.SORT_MODE.TOP_RATED;
-        }
+
         FetchMovieTask.with(this)
-                .setOrder(sortMode)
+                .setOrder(MoviePreferences.getSortMode(this))
                 .setPage(page)
                 .setCallback(callbackMovieTask)
                 .execute();
@@ -163,22 +174,42 @@ public class MainActivity extends AppCompatActivity
                 return true;
             case R.id.action_sort_popular:
                 invalidateData();
-                mMoviesAdapter.setPopular();
+                mMoviesAdapter.setSortMode(MoviesAdapter.SORT_MODE.MOST_POPULAR);
                 loadMoviesData(1);
+                setSortModePreferences(MoviesAdapter.SORT_MODE.MOST_POPULAR);
                 return true;
             case R.id.action_top_rated:
                 invalidateData();
-                mMoviesAdapter.setTopRated();
+                mMoviesAdapter.setSortMode(MoviesAdapter.SORT_MODE.TOP_RATED);
                 loadMoviesData(1);
+                setSortModePreferences(MoviesAdapter.SORT_MODE.TOP_RATED);
                 return true;
-            default:
-                super.onOptionsItemSelected(item);
+            case R.id.action_favorites:
+                invalidateData();
+                setFavoritePreferences();
+                return true;
         }
-        return  true;
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setSortModePreferences(MoviesAdapter.SORT_MODE sortMode) {
+        MoviePreferences.setFavorites(this,false);
+        MoviePreferences.setSortMode(this,sortMode);
+    }
+
+    private void setFavoritePreferences(){
+        MoviePreferences.setFavorites(this,true);
     }
 
     @Override
     public void onClick(Movie movie) {
+        //fetch is favorite.
+        Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.buildMovieUriWithId(movie.getId()),
+                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},null,null,null);
+        movie.setFavourite(cursor != null && cursor.moveToFirst());
+        if(cursor != null){
+            cursor.close();
+        }
         if(mPlaceHolder == null) {
             Context context = MainActivity.this;
             Class destinationActivity = MovieDetailsActivity.class;
@@ -208,7 +239,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onRestoreInstanceState(Bundle savedState) {
         super.onRestoreInstanceState(savedState);
-        if(savedState != null ){
+        /*if(savedState != null ){
             if (savedState.containsKey(SORT_TOP_RATED) && savedState.getBoolean(SORT_TOP_RATED) ){
                 mMoviesAdapter.setTopRated();
             }else{
@@ -227,21 +258,46 @@ public class MainActivity extends AppCompatActivity
             if (savedState.containsKey(CURRENT_PAGE)){
                 mScrollListener.setCurrentPage(savedState.getInt(CURRENT_PAGE));
             }
-        }
+        }*/
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(mGridState != null){
+        /*if(mGridState != null){
             mGridLayoutManager.onRestoreInstanceState(mGridState);
-        }
+        }*/
     }
 
     @Override
     protected void onPause() {
-        mGridState = mGridLayoutManager.onSaveInstanceState();
+       // mGridState = mGridLayoutManager.onSaveInstanceState();
         super.onPause();
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
+        Uri uri = MovieContract.MovieEntry.CONTENT_URI;
+        switch (loaderId) {
+            case ID_FAVORITE_LOADER:
+                return new CursorLoader(this,
+                        uri,
+                        MOVIE_DETAIL_PROJECTION,
+                        null,
+                        null,
+                        null);
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + loaderId);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
 }

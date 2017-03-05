@@ -38,7 +38,7 @@ public class MovieProvider extends ContentProvider {
      * ourselves, such as using regular expressions.
      */
     public static final int CODE_MOVIE = 35;
-    public static final int CODE_MOVIE_ID = 34;
+    public static final int CODE_MOVIE_WITH_ID = 34;
 
     /*
      * The URI Matcher used by this content provider. The leading "s" in this variable name
@@ -60,7 +60,7 @@ public class MovieProvider extends ContentProvider {
         final String authority = MovieContract.CONTENT_AUTHORITY;
 
         matcher.addURI(authority, MovieContract.PATH_MOVIE, CODE_MOVIE);
-        matcher.addURI(authority, MovieContract.PATH_MOVIE + "/#", CODE_MOVIE_ID);
+        matcher.addURI(authority, MovieContract.PATH_MOVIE + "/#", CODE_MOVIE_WITH_ID);
 
         return matcher;
     }
@@ -116,7 +116,7 @@ public class MovieProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
 
 
-            case CODE_MOVIE_ID: {
+            case CODE_MOVIE_WITH_ID: {
 
                 String movieId = uri.getLastPathSegment();
                 String[] selectionArguments = new String[]{movieId};
@@ -163,8 +163,8 @@ public class MovieProvider extends ContentProvider {
         int numRowsDeleted;
 
         if (null == selection) selection = "1";
-
-        switch (sUriMatcher.match(uri)) {
+        int test = sUriMatcher.match(uri);
+        switch (test) {
 
             case CODE_MOVIE:
                 numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
@@ -173,7 +173,7 @@ public class MovieProvider extends ContentProvider {
                         selectionArgs);
 
                 break;
-            case CODE_MOVIE_ID:
+            case CODE_MOVIE_WITH_ID:
                 String movieId = uri.getLastPathSegment();
                 String[] selectionArguments = new String[]{movieId};
 
@@ -181,6 +181,7 @@ public class MovieProvider extends ContentProvider {
                         MovieContract.MovieEntry.TABLE_NAME,
                         MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ? ",
                         selectionArguments);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -195,20 +196,45 @@ public class MovieProvider extends ContentProvider {
 
     @Override
     public String getType(@NonNull Uri uri) {
-        //TODO: maybe images
-        throw new RuntimeException("We are not implementing getType in Sunshine.");
+        throw new RuntimeException("We are not implementing");
     }
 
 
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        throw new RuntimeException(
-                "We are not implementing insert in Sunshine. Use bulkInsert instead");
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+        switch (sUriMatcher.match(uri)) {
+
+            case CODE_MOVIE:
+                db.beginTransaction();
+                int rowsInserted = 0;
+                try {
+                    long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, values);
+                    if (_id != -1) {
+                        rowsInserted++;
+                        uri = MovieContract.MovieEntry.buildMovieUriWithId(values.getAsInteger(MovieContract.MovieEntry.COLUMN_MOVIE_ID));
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+
+                if (rowsInserted > 0) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                    return uri;
+                }else {
+                    return  null;
+                }
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
     }
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        throw new RuntimeException("We are not implementing update in Sunshine");
+        throw new RuntimeException("We are not implementing update");
     }
 
     /**

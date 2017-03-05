@@ -43,7 +43,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.example.android.popularmovies.data.MovieContract.MovieEntry.COLUMN_BACKDROP;
 import static com.example.android.popularmovies.data.MovieContract.MovieEntry.COLUMN_MOVIE_ID;
+import static com.example.android.popularmovies.data.MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS;
+import static com.example.android.popularmovies.data.MovieContract.MovieEntry.COLUMN_POSTER;
+import static com.example.android.popularmovies.data.MovieContract.MovieEntry.COLUMN_RELEASE_DATE;
+import static com.example.android.popularmovies.data.MovieContract.MovieEntry.COLUMN_SCORE;
+import static com.example.android.popularmovies.data.MovieContract.MovieEntry.COLUMN_TITLE;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -58,6 +64,7 @@ class TestUtilities {
 
 
     static final int BULK_INSERT_RECORDS_TO_INSERT = 10;
+    public static final int MOVIE_ID = 1;
 
     /**
      * Ensures there is a non empty cursor and validates the cursor's data by checking it against
@@ -189,11 +196,14 @@ class TestUtilities {
      * @return ContentValues that can be inserted into our ContentProvider or movie.db
      */
     static ContentValues createTestMovieContentValues() {
-
-        ContentValues testWeatherValues = new ContentValues();
-
-        testWeatherValues.put(COLUMN_MOVIE_ID, 321);
-
-        return testWeatherValues;
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_MOVIE_ID, MOVIE_ID);
+        cv.put(COLUMN_TITLE, "TEST");
+        cv.put(COLUMN_RELEASE_DATE, "2016-01-01");
+        cv.put(COLUMN_PLOT_SYNOPSIS, "plot");
+        cv.put(COLUMN_SCORE, 3.5);
+        cv.put(COLUMN_BACKDROP, "aaa");
+        cv.put(COLUMN_POSTER, "bbb");
+        return cv;
     }
 }

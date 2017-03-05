@@ -61,8 +61,7 @@ import static junit.framework.Assert.fail;
 public class TestUriMatcher {
 
     private static final Uri TEST_MOVIE_DIR = MovieContract.MovieEntry.CONTENT_URI;
-    private static final Uri TEST_MOVIE_DIR_WITH_ID = TEST_MOVIE_DIR;
-    //TODO: movie_dir with ID
+    private static final Uri TEST_MOVIE_DIR_WITH_ID = MovieContract.MovieEntry.buildMovieUriWithId(TestUtilities.MOVIE_ID);
 
     private static final String movieCodeVariableName = "CODE_MOVIE";
     private static int REFLECTED_MOVIE_CODE;

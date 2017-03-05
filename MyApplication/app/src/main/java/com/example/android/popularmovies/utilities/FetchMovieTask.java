@@ -60,13 +60,25 @@ public class FetchMovieTask extends AbstractAsyncTask<Boolean,Void,ArrayList<Mov
         String apiKey = mContext.getResources().getString(R.string.api_key_the_movie_db);
         Results<Movie> results;
         try {
-            if (mSortMode == MoviesAdapter.SORT_MODE.MOST_POPULAR) {
-                results = NetworkUtils.buildRetrofit().loadPopular(mPage, apiKey).execute().body();
-            } else {
-                results = NetworkUtils.buildRetrofit().loadTopRated(mPage, apiKey).execute().body();
+            switch (mSortMode){
+                case MOST_POPULAR:
+                    results = NetworkUtils.buildRetrofit().loadPopular(mPage, apiKey)
+                            .execute().body();
+                    break;
+                case TOP_RATED:
+                    results = NetworkUtils.buildRetrofit().loadTopRated(mPage, apiKey)
+                            .execute().body();
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                            "There is no implementation for this sort mode: "
+                            + mSortMode.name());
             }
         }
         catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }catch (IllegalArgumentException e){
             e.printStackTrace();
             return null;
         }

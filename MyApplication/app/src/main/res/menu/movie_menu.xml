@@ -35,6 +35,9 @@
         android:orderInCategory="3"
         android:title="@string/action_sort_popular"
         />
-
+    <item android:id = "@+id/action_favorites"
+          android:orderInCategory="4"
+          android:title="@string/favorites"
+        />
 
 </menu>

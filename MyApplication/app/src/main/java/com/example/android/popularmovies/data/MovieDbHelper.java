@@ -40,7 +40,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
      * If you change the database schema, you must increment the database version or the onUpgrade
      * method will not be called.
      */
-    private static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     public MovieDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -57,29 +57,28 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
         /*
          * This String will contain a simple SQL statement that will create a table that will
-         * cache our weather data.
+         * cache our movie data.
          */
+
         final String SQL_CREATE_WEATHER_TABLE =
 
                 "CREATE TABLE " + MovieContract.MovieEntry.TABLE_NAME + " (" +
 
-                /*
-                 * WeatherEntry did not explicitly declare a column called "_ID". However,
-                 * WeatherEntry implements the interface, "BaseColumns", which does have a field
-                 * named "_ID". We use that here to designate our table's primary key.
-                 */
-                        MovieContract.MovieEntry._ID   + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    MovieContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER PRIMARY KEY, "  +
 
-                        MovieContract.MovieEntry.COLUMN_MOVIE_ID       + " INTEGER NOT NULL, "                 +
+                    MovieContract.MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, "  +
 
+                    MovieContract.MovieEntry.COLUMN_RELEASE_DATE + " TEXT NULL, " +
 
-                /*
-                 * To ensure this table can only contain one weather entry per date, we declare
-                 * the date column to be unique. We also specify "ON CONFLICT REPLACE". This tells
-                 * SQLite that if we have a weather entry for a certain date and we attempt to
-                 * insert another weather entry with that date, we replace the old weather entry.
-                 */
-                        " UNIQUE (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
+                    MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS  + " TEXT NULL, "  +
+
+                    MovieContract.MovieEntry.COLUMN_SCORE + " REAL NULL, " +
+
+                    MovieContract.MovieEntry.COLUMN_BACKDROP + " TEXT NULL, " +
+
+                    MovieContract.MovieEntry.COLUMN_POSTER + " TEXT NULL "
+                    +" )"
+                ;
 
         /*
          * After we've spelled out our SQLite table creation statement above, we actually execute

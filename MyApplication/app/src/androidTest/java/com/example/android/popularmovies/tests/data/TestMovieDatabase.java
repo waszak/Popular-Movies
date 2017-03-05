@@ -27,6 +27,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.example.android.popularmovies.data.MovieContract;
+import com.example.android.popularmovies.data.MovieDbHelper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -176,7 +177,7 @@ public class TestMovieDatabase {
 
     @Test
     public void testDatabaseVersionWasIncremented() {
-        int expectedDatabaseVersion = 1;
+        int expectedDatabaseVersion = MovieDbHelper.DATABASE_VERSION;
         String databaseVersionShouldBe1 = "Database version should be "
                 + expectedDatabaseVersion + " but isn't."
                 + "\n Database version: ";
@@ -258,7 +259,7 @@ public class TestMovieDatabase {
         ContentValues testMovieContentValues = TestUtilities.createTestMovieContentValues();
 
         /* Insert ContentValues into database and get a row ID back */
-        long movieRowId = database.insert(
+        long movieRowId = database.insertOrThrow(
                 REFLECTED_TABLE_NAME,
                 null,
                 testMovieContentValues);
@@ -313,53 +314,6 @@ public class TestMovieDatabase {
 
         /* Close cursor */
         movieCursor.close();
-    }
-
-    /**
-     * Tests to ensure that inserts into your database results in automatically
-     * incrementing row IDs.
-     */
-    @Test
-    public void testIntegerAutoincrement() {
-
-        /* First, let's ensure we have some values in our table initially */
-        testInsertSingleRecordIntoMovieTable();
-
-        /* Obtain movie values from TestUtilities */
-        ContentValues testMovieValues = TestUtilities.createTestMovieContentValues();
-
-        /* Get the date of the testMovieValues to ensure we use a different date later */
-        long originalMovieID = testMovieValues.getAsLong(REFLECTED_COLUMN_MOVIE_ID);
-
-        /* Insert ContentValues into database and get a row ID back */
-        long firstRowId = database.insert(
-                REFLECTED_TABLE_NAME,
-                null,
-                testMovieValues);
-
-        /* Delete the row we just inserted to see if the database will reuse the rowID */
-        database.delete(
-                REFLECTED_TABLE_NAME,
-                "_ID == " + firstRowId,
-                null);
-
-        /*
-         * Now we need to change the date associated with our test content values because the
-         * database policy is to replace identical dates on conflict.
-         */
-        long movieIdAfter = originalMovieID + 1;
-        testMovieValues.put(REFLECTED_COLUMN_MOVIE_ID, movieIdAfter);
-
-        /* Insert ContentValues into database and get another row ID back */
-        long secondRowId = database.insert(
-                REFLECTED_TABLE_NAME,
-                null,
-                testMovieValues);
-
-        String sequentialInsertsDoNotAutoIncrementId =
-                "IDs were reused and shouldn't be if autoincrement is setup properly.";
-        assertNotSame(sequentialInsertsDoNotAutoIncrementId,
-                firstRowId, secondRowId);
     }
 
 

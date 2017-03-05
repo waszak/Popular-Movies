@@ -45,7 +45,7 @@ public class Movie implements Parcelable {
 
     @SerializedName("vote_average")
     @Expose
-    private final double mVoteAverage;
+    private final float mVoteAverage;
 
     @SerializedName("overview")
     @Expose
@@ -100,7 +100,7 @@ public class Movie implements Parcelable {
         return mPlotSynopsis;
     }
 
-    public double getScore(){ return mVoteAverage; }
+    public float getScore(){ return mVoteAverage; }
     @Override
     public int describeContents() {
         return 0;
@@ -111,7 +111,7 @@ public class Movie implements Parcelable {
         dest.writeString(mTitle);
         dest.writeString(mPosterFileName);
         dest.writeString(mReleaseDate);
-        dest.writeDouble(mVoteAverage);
+        dest.writeFloat(mVoteAverage);
         dest.writeString(mPlotSynopsis);
         dest.writeInt(mId);
         dest.writeString(mBackDrop);

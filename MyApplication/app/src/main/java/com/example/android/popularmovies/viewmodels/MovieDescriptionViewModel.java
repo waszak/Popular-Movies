@@ -64,4 +64,15 @@ public class MovieDescriptionViewModel {
         NetworkUtils.buildPosterRequest(view.getContext(),imageUrl).into(view);
     }
 
+    public boolean isFavorite(){
+        return  mMovie.isFavourite();
+    }
+
+    public void setFavorite(boolean isFavorite){
+        mMovie.setFavourite(isFavorite);
+    }
+
+    public int getId(){return mMovie.getId();}
+
+    public Movie getMovie(){return mMovie;}
 }

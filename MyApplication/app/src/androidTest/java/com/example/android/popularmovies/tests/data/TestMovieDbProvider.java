@@ -44,6 +44,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -143,14 +144,20 @@ public class TestMovieDbProvider {
 
 
     @Test
-    public void testBulkInsert() {
-        //TODO: test bulk insert
+    public void testInsertProvider() {
+        Uri uri = MovieContract.MovieEntry.CONTENT_URI;
+        ContentValues cv = TestUtilities.createTestMovieContentValues();
+        Uri expectedUri = MovieContract.MovieEntry.buildMovieUriWithId(cv.getAsInteger(MovieContract.MovieEntry.COLUMN_MOVIE_ID));
+        Uri uriNewMovieId = mContext.getContentResolver().insert(uri,cv);
+        assertTrue(uriNewMovieId != null && expectedUri.toString().equals(uriNewMovieId.toString()));
     }
 
 
     @Test
     public void testDeleteAllRecordsFromProvider() {
-        //TODO: test provider
+        Uri uri = MovieContract.MovieEntry.CONTENT_URI;
+        int noDeleted = mContext.getContentResolver().delete(uri,null,null);
+        assertTrue( noDeleted != -1);
     }
 
 

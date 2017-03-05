@@ -25,8 +25,7 @@
     <string name="action_sort_top_rated">Highest rated</string>
     <string name="title_activity_detail">Movie details</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <string name="content_description_poster">Poster</string>
 
     <string name="example_title">Title</string>
@@ -41,4 +40,6 @@
     <string name="play_sign">Play sign</string>
 
     <string name="content_authority">com.example.android.popularmovies</string>
+    <string name="favorites">Favorites</string>
+
 </resources>

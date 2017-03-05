@@ -112,7 +112,8 @@
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
         <android.support.design.widget.FloatingActionButton
-            android:src="@android:drawable/btn_star"
+            android:src="@drawable/heart_outline"
+            android:id="@+id/fab_favorite"
             app:fabSize="normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
