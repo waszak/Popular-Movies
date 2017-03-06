@@ -19,6 +19,7 @@ package com.example.android.popularmovies.utilities;
 
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.models.Results;
+import com.example.android.popularmovies.models.Review;
 import com.example.android.popularmovies.models.Trailer;
 
 import retrofit2.Call;
@@ -33,6 +34,9 @@ import retrofit2.http.Query;
 public interface ITheMovieDbApi {
     @GET("/3/movie/{id}/videos")
     Call<Results<Trailer>> loadTrailers(@Path("id") int id, @Query("api_key") String status);
+
+    @GET("/3/movie/{id}/reviews")
+    Call<Results<Review>> loadReviews(@Path("id") int id,@Query("page") int page, @Query("api_key") String status);
 
     @GET("/3/movie/popular")
     Call<Results<Movie>> loadPopular(@Query("page") int page, @Query("api_key") String status);

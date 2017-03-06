@@ -19,9 +19,10 @@ package com.example.android.popularmovies.utilities;
 
 import android.os.AsyncTask;
 
-public abstract class AbstractAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
+public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
 
     private ICallbackTask<Result> mCallbackTask;
+    private ITask<Result> mTask;
 
     public interface ICallbackTask<Result>{
         void onStart();
@@ -29,9 +30,26 @@ public abstract class AbstractAsyncTask<Params, Progress, Result> extends AsyncT
         void onError();
     }
 
-    public AbstractAsyncTask<Params, Progress, Result> setCallback(ICallbackTask<Result> callbackTask){
+    public interface ITask<Result>{
+        Result task();
+    }
+
+    public BaseAsyncTask<Params, Progress, Result> setCallback(ICallbackTask<Result> callbackTask){
         mCallbackTask = callbackTask;
         return this;
+    }
+
+    public BaseAsyncTask<Params, Progress, Result> setTask(ITask<Result> task){
+        mTask = task;
+        return this;
+    }
+
+    @Override
+    protected Result doInBackground(Params... params) {
+        if(mTask != null){
+            return  mTask.task();
+        }
+        return  null;
     }
 
     @Override

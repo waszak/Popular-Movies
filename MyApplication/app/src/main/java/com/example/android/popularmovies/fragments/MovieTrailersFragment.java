@@ -43,6 +43,7 @@ import android.view.ViewGroup;
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.models.Results;
+import com.example.android.popularmovies.models.Review;
 import com.example.android.popularmovies.models.Trailer;
 import com.example.android.popularmovies.adapters.TrailerAdapter;
 import com.example.android.popularmovies.utilities.ITheMovieDbApi;
@@ -66,11 +67,15 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
     private final static int LOADER_ID = 0;
     private final static String TAG = MovieTrailersFragment.class.getSimpleName();
 
+    @BindView(R.id.rv_trailers) RecyclerView mRecyclerView;
+
     private Movie mMovie;
     private TrailerAdapter mTrailerAdapter;
-    @BindView(R.id.rv_trailers) RecyclerView mRecyclerView;
     private ShareActionProvider mShareAction;
     private Intent mSharedIntent;
+
+    private static final String MOVIE_ACTIVE = "MOVIE_ACTIVE";
+    private static final String TRAILER_ADAPTER_STATE = "TRAILER_ADAPTER_STATE";
 
     public MovieTrailersFragment() {
         // Required empty public constructor
@@ -116,6 +121,7 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
         }else{
             throw new IllegalArgumentException("No movie passed to fragment");
         }
+        onRestoreState(savedInstanceState);
         return view;
     }
 
@@ -162,6 +168,31 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onLoaderReset(Loader<Results<Trailer>> loader) {
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(TRAILER_ADAPTER_STATE, mTrailerAdapter.getList());
+        //We need this to recover fragment details on tablet.
+        if (mMovie != null) {
+            outState.putParcelable(MOVIE_ACTIVE, mMovie);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    private void onRestoreState(Bundle savedInstanceState) {
+        if(savedInstanceState == null){
+            getLoaderManager().restartLoader(LOADER_ID, null, this);
+        }
+        else{
+            if(savedInstanceState.containsKey(TRAILER_ADAPTER_STATE)){
+                ArrayList<Trailer> trailerArrayList = savedInstanceState.
+                        getParcelableArrayList(TRAILER_ADAPTER_STATE);
+                mTrailerAdapter.setTrailersData(trailerArrayList);
+            }if(savedInstanceState.containsKey(MOVIE_ACTIVE)){
+                mMovie = savedInstanceState.getParcelable(MOVIE_ACTIVE);
+            }
+        }
     }
 
     @Override

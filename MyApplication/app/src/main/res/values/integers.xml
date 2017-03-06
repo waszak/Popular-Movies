@@ -18,5 +18,6 @@
 
 <resources>
     <integer name="number_of_column">2</integer>
+    <integer name="number_of_columns_with_review">1</integer>
     <integer name="sort_mode">0</integer>
 </resources>

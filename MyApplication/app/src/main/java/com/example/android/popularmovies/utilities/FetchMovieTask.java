@@ -26,7 +26,7 @@ import com.example.android.popularmovies.models.Results;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class FetchMovieTask extends AbstractAsyncTask<Boolean,Void,ArrayList<Movie>> {
+public class FetchMovieTask extends BaseAsyncTask<Boolean,Void,ArrayList<Movie>> {
 
     private int mPage;
     private MoviesAdapter.SORT_MODE mSortMode;

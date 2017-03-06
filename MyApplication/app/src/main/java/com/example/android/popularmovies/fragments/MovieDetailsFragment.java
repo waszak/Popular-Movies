@@ -91,7 +91,7 @@ public class MovieDetailsFragment extends Fragment {
             movie = bundleThatStartedThisActivity.getParcelable(Movie.TAG);
         }
         pagerViewAdapterDetails.addTab(MovieDescriptionFragment.newInstance(movie));
-        pagerViewAdapterDetails.addTab(new MovieReviewsFragment());
+        pagerViewAdapterDetails.addTab(MovieReviewsFragment.newInstance(movie));
         pagerViewAdapterDetails.addTab(MovieTrailersFragment.newInstance(movie));
         mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());
         mViewPager.setAdapter(pagerViewAdapterDetails);

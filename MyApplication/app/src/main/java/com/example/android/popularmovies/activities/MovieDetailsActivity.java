@@ -77,7 +77,7 @@ public class MovieDetailsActivity extends AppCompatActivity
             mMovie = intentThatStartedThisActivity.getParcelableExtra(Movie.TAG);
         }
         pagerViewAdapterDetails.addTab(MovieDescriptionFragment.newInstance(mMovie));
-        pagerViewAdapterDetails.addTab(new MovieReviewsFragment());
+        pagerViewAdapterDetails.addTab(MovieReviewsFragment.newInstance(mMovie));
         pagerViewAdapterDetails.addTab(MovieTrailersFragment.newInstance(mMovie));
         //setOffscreenPageLimit allows us to fetch trailer before going opening it.
         mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());

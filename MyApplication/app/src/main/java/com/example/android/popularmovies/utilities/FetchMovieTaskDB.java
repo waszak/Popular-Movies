@@ -30,7 +30,7 @@ import java.util.ArrayList;
  * Created by Waszak on 05.03.2017.
  */
 
-public class FetchMovieTaskDB  extends AbstractAsyncTask<Boolean,Void,ArrayList<Movie>> {
+public class FetchMovieTaskDB  extends BaseAsyncTask<Boolean,Void,ArrayList<Movie>> {
     private final Context mContext;
     public static final String[] MOVIE_DETAIL_PROJECTION = {
             MovieContract.MovieEntry.COLUMN_MOVIE_ID,
