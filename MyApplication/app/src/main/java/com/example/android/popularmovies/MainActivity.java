@@ -45,33 +45,33 @@ import com.example.android.popularmovies.fragments.MovieDetailsFragment;
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.utilities.FetchMovieTask;
 import com.example.android.popularmovies.utilities.FetchMovieTaskDB;
+import com.example.android.popularmovies.utilities.IMovieListListener;
 
 import java.util.ArrayList;
 
+import butterknife.BindBool;
 import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
-    implements  MoviesAdapter.MoviesAdapterOnClickHandler {
+    implements  MoviesAdapter.MoviesAdapterOnClickHandler,
+        IMovieListListener {
 
     @BindView(R.id.rv_movies) RecyclerView mMovieList;
     @Nullable @BindView(R.id.placeholder) FrameLayout mPlaceHolder;
     @BindInt(R.integer.number_of_column) int mNumberOfColumns;
+    @BindBool(R.bool.isPaneLayout) boolean mIsPaneLayout;
 
     private MoviesAdapter mMoviesAdapter;
     private ScrollListener mScrollListener;
     private GridLayoutManager mGridLayoutManager;
-    //private Parcelable mGridState;
+    private Movie mMovie;
 
-   /* private static final String LIST_STATE_KEY = "LIST_STATE_KEY";
+    private static final String MOVIE_ACTIVE = "MOVIE_ACTIVE";
     private static final String MOVIES_ADAPTER_STATE = "MOVIES_ADAPTER_STATE";
-    private static final String SORT_TOP_RATED = "SORT_TOP_RATED";
-    private static final String CURRENT_PAGE = "CURRENT_PAGE";*/
 
     public static final int MOVIE_DETAILS_REQUEST = 1;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,11 +97,9 @@ public class MainActivity extends AppCompatActivity
         mMovieList.setAdapter(mMoviesAdapter);
         mMovieList.addOnScrollListener(mScrollListener);
         mMoviesAdapter.setSortMode(MoviePreferences.getSortMode(this));
-        /*if(mGridState != null){
-            onRestoreInstanceState(savedInstanceState);
-        }else {*/
-            loadMoviesData(1);
-        //}
+
+        onRestoreState(savedInstanceState);
+
     }
 
     private void showMoviesDataView() {
@@ -201,12 +199,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClick(Movie movie) {
-        //fetch is favorite.
-        Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.buildMovieUriWithId(movie.getId()),
-                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},null,null,null);
-        movie.setFavourite(cursor != null && cursor.moveToFirst());
-        if(cursor != null){
-            cursor.close();
+        mMovie = movie;
+        //fetch is favorite only when vies isn't favorites.
+        if(!MoviePreferences.getFavorites(this)){
+            Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.buildMovieUriWithId(movie.getId()),
+                    new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},null,null,null);
+            movie.setFavourite(cursor != null && cursor.moveToFirst());
+            if(cursor != null){
+                cursor.close();
+            }
         }
         if(mPlaceHolder == null) {
             Context context = MainActivity.this;
@@ -218,6 +219,7 @@ public class MainActivity extends AppCompatActivity
             MovieDetailsFragment fragment = MovieDetailsFragment.newInstance(movie);
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.placeholder, fragment);
+            ft.addToBackStack(null);
             ft.commit();
         }
 
@@ -230,67 +232,57 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 if (intent.hasExtra(Movie.TAG)) {
                     Movie movieUpdated = intent.getParcelableExtra(Movie.TAG);
-                    for (Movie movie : mMoviesAdapter.getList()) {
-                        if (movie.getId() == movieUpdated.getId()) {
-                            movie.setFavourite(movieUpdated.isFavourite());
-                            if(MoviePreferences.getFavorites(this) && !movie.isFavourite()){
-                                mMoviesAdapter.removeMovie(movie);
-                            }
-                        }
-                    }
+                    UpdateMovie(movieUpdated,false);
+
                 }
             }
         }
     }
     @Override
     protected void onSaveInstanceState(Bundle state) {
-
-        /*mGridState = mGridLayoutManager.onSaveInstanceState();
-        state.putParcelable(LIST_STATE_KEY, mGridState);
-        state.putParcelableArrayList(MOVIES_ADAPTER_STATE,mMoviesAdapter.getList());
-        state.putBoolean(SORT_TOP_RATED, mMoviesAdapter.topRated());
-        state.putInt(CURRENT_PAGE, mScrollListener.getCurrentPage());*/
+        state.putParcelableArrayList(MOVIES_ADAPTER_STATE, mMoviesAdapter.getList());
+        //We need this to recover fragment details on tablet.
+        if (mMovie != null) {
+            state.putParcelable(MOVIE_ACTIVE, mMovie);
+        }
         super.onSaveInstanceState(state);
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedState) {
-        super.onRestoreInstanceState(savedState);
-        /*if(savedState != null ){
-            if (savedState.containsKey(SORT_TOP_RATED) && savedState.getBoolean(SORT_TOP_RATED) ){
-                mMoviesAdapter.setTopRated();
-            }else{
-                mMoviesAdapter.setPopular();
-            }
 
+    protected void onRestoreState(Bundle savedState) {
+        if(savedState != null ){
+            mMoviesAdapter.setSortMode(MoviePreferences.getSortMode(this));
             if(savedState.containsKey(MOVIES_ADAPTER_STATE)){
                 ArrayList<Movie> movieArrayList = savedState.getParcelableArrayList(MOVIES_ADAPTER_STATE);
                 mMoviesAdapter.setMoviesData(movieArrayList);
+            }if(savedState.containsKey(MOVIE_ACTIVE)){
+                mMovie = savedState.getParcelable(MOVIE_ACTIVE);
             }
-
-            if (savedState.containsKey(LIST_STATE_KEY)){
-                mGridState = savedState.getParcelable(LIST_STATE_KEY);
+            if(mIsPaneLayout && mMovie!= null){
+                onClick(mMovie);
             }
-
-            if (savedState.containsKey(CURRENT_PAGE)){
-                mScrollListener.setCurrentPage(savedState.getInt(CURRENT_PAGE));
-            }
-        }*/
+        }
+        else{
+            loadMoviesData(1);
+        }
     }
+
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        /*if(mGridState != null){
-            mGridLayoutManager.onRestoreInstanceState(mGridState);
-        }*/
+    public void UpdateMovie(Movie movieUpdated, boolean add) {
+        if(!add){
+            for (Movie movie : mMoviesAdapter.getList()) {
+                if (movie.getId() == movieUpdated.getId()) {
+                    movie.setFavourite(movieUpdated.isFavourite());
+                    if(MoviePreferences.getFavorites(this) && !movie.isFavourite()){
+                        mMoviesAdapter.removeMovie(movie);
+                    }
+                }
+            }
+        }else{
+            ArrayList<Movie> movies = new ArrayList<>();
+            movies.add(movieUpdated);
+            mMoviesAdapter.addMoviesData(movies);
+        }
     }
-
-    @Override
-    protected void onPause() {
-       // mGridState = mGridLayoutManager.onSaveInstanceState();
-        super.onPause();
-    }
-
-
 }

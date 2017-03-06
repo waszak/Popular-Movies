@@ -17,21 +17,22 @@
 
 package com.example.android.popularmovies.fragments;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 
 import com.example.android.popularmovies.data.MovieContract;
-import com.example.android.popularmovies.data.MovieDbHelper;
-import com.example.android.popularmovies.data.MovieProvider;
 import com.example.android.popularmovies.models.Movie;
+import com.example.android.popularmovies.utilities.IMovieListListener;
 import com.example.android.popularmovies.viewmodels.MovieDescriptionViewModel;
 import com.example.android.popularmovies.R;
 
@@ -47,6 +48,8 @@ public class MovieDescriptionFragment extends Fragment {
     @BindView(R.id.fab_favorite) FloatingActionButton mFloatingActionButton;
     private MovieBinding mMovieBinding;
     private MovieDescriptionViewModel mViewModel;
+    private static final String TAG = MovieDescriptionFragment.class.getSimpleName();
+    private IMovieListListener listener;
 
     public MovieDescriptionFragment() {
         // Required empty public constructor
@@ -82,6 +85,7 @@ public class MovieDescriptionFragment extends Fragment {
         }else {
             getContext().getContentResolver().delete(uri,null,null);
         }
+        listener.UpdateMovie(mViewModel.getMovie(),mViewModel.isFavorite());
     }
 
     private void updateFavoriteImage(){
@@ -100,5 +104,15 @@ public class MovieDescriptionFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            listener = (IMovieListListener) context;
+        } catch (ClassCastException castException) {
+            Log.d(TAG, "Activity doesn't implement the interface");
+            throw castException;
+        }
 
+    }
 }

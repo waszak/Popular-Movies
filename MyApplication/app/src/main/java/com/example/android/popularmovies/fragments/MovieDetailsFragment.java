@@ -81,7 +81,7 @@ public class MovieDetailsFragment extends Fragment {
         mTabLayout.addTab(mTabLayout.newTab().setText(getString(R.string.trailers)));
         mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getChildFragmentManager();
 
         final PagerAdapterMovie pagerViewAdapterDetails = new PagerAdapterMovie(fragmentManager);
         Bundle bundleThatStartedThisActivity = getArguments();

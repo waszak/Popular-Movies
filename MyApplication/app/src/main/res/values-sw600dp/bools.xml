@@ -17,6 +17,5 @@
   -->
 
 <resources>
-    <bool name="favorite">false</bool>
     <bool name="isPaneLayout">true</bool>
 </resources>

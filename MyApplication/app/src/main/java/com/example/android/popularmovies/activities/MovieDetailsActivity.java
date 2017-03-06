@@ -33,6 +33,7 @@ import com.example.android.popularmovies.fragments.MovieDescriptionFragment;
 import com.example.android.popularmovies.fragments.MovieReviewsFragment;
 import com.example.android.popularmovies.fragments.MovieTrailersFragment;
 import com.example.android.popularmovies.models.Movie;
+import com.example.android.popularmovies.utilities.IMovieListListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +41,8 @@ import butterknife.ButterKnife;
 /*
 * Details activity shows detailed information about selected mMovie.
 */
-public class MovieDetailsActivity extends AppCompatActivity {
+public class MovieDetailsActivity extends AppCompatActivity
+    implements IMovieListListener {
 
     @BindView(R.id.view_pager) ViewPager mViewPager;
     @BindView(R.id.tab_layout) TabLayout mTabLayout;
@@ -118,5 +120,10 @@ public class MovieDetailsActivity extends AppCompatActivity {
             setResult(RESULT_OK, intent);
         }
         super.onBackPressed();
+    }
+
+    @Override
+    public void UpdateMovie(Movie movie, boolean add) {
+        //do nothing
     }
 }
