@@ -120,6 +120,7 @@ public class MovieDetailsFragment extends Fragment {
         Bundle args = new Bundle();
         args.putParcelable(Movie.TAG,movie);
         fragment.setArguments(args);
+        fragment.setRetainInstance(true);
         return fragment;
     }
 }

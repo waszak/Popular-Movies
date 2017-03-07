@@ -17,6 +17,5 @@
   -->
 
 <resources>
-    <bool name="favorite">false</bool>
-    <bool name="isPaneLayout">false</bool>
+    <integer name="number_of_column">4</integer>
 </resources>

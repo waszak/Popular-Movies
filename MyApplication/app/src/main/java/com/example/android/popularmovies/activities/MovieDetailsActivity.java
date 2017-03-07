@@ -18,12 +18,14 @@
 package com.example.android.popularmovies.activities;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.android.popularmovies.MainActivity;
@@ -35,6 +37,7 @@ import com.example.android.popularmovies.fragments.MovieTrailersFragment;
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.utilities.IMovieListListener;
 
+import butterknife.BindBool;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -44,11 +47,15 @@ import butterknife.ButterKnife;
 public class MovieDetailsActivity extends AppCompatActivity
     implements IMovieListListener {
 
+    private static final String TAG = MovieDetailsActivity.class.getSimpleName();
+
     @BindView(R.id.view_pager) ViewPager mViewPager;
     @BindView(R.id.tab_layout) TabLayout mTabLayout;
     @BindView(R.id.toolbar)  Toolbar mToolbar;
+    @BindBool(R.bool.isPaneLayout) boolean mIsPaneLayout;
 
     private Movie mMovie;
+    private static final String MOVIE_ACTIVE = "MOVIE_ACTIVE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,15 +74,36 @@ public class MovieDetailsActivity extends AppCompatActivity
         mTabLayout.addTab(mTabLayout.newTab().setText(getString(R.string.trailers)));
         mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-
-        final PagerAdapterMovie pagerViewAdapterDetails = new PagerAdapterMovie(fragmentManager);
         Intent intentThatStartedThisActivity = getIntent();
-
-
         if (intentThatStartedThisActivity.hasExtra(Movie.TAG)) {
             mMovie = intentThatStartedThisActivity.getParcelableExtra(Movie.TAG);
         }
+
+        onRestore(intentThatStartedThisActivity.getExtras());
+
+    }
+
+    private void onRestore(Bundle savedInstanceState){
+        if(savedInstanceState != null){
+            if(savedInstanceState.containsKey(MOVIE_ACTIVE)){
+                mMovie = savedInstanceState.getParcelable(MOVIE_ACTIVE);
+            }
+        }
+        //If pane layout recreate activity.
+        if(mIsPaneLayout){
+            Log.d(MovieDetailsActivity.TAG,"Recreating activity in pane layout");
+            Intent mainActivityIntent = new Intent(this, MainActivity.class);
+            mainActivityIntent.putExtras(savedInstanceState);
+            startActivity(mainActivityIntent);
+        }
+        setupFragments();
+    }
+
+    private void setupFragments(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        final PagerAdapterMovie pagerViewAdapterDetails = new PagerAdapterMovie(fragmentManager);
+
         pagerViewAdapterDetails.addTab(MovieDescriptionFragment.newInstance(mMovie));
         pagerViewAdapterDetails.addTab(MovieReviewsFragment.newInstance(mMovie));
         pagerViewAdapterDetails.addTab(MovieTrailersFragment.newInstance(mMovie));
@@ -99,7 +127,6 @@ public class MovieDetailsActivity extends AppCompatActivity
 
             }
         });
-
     }
 
     @Override
@@ -126,4 +153,14 @@ public class MovieDetailsActivity extends AppCompatActivity
     public void UpdateMovie(Movie movie, boolean add) {
         //do nothing
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle state) {
+        //We need this to recover fragment details on tablet.
+        if (mMovie != null) {
+            state.putParcelable(MOVIE_ACTIVE, mMovie);
+        }
+        super.onSaveInstanceState(state);
+    }
+
 }

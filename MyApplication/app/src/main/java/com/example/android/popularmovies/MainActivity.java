@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity
                 cursor.close();
             }
         }
-        if(mPlaceHolder == null) {
+        if(!mIsPaneLayout) {
             Context context = MainActivity.this;
             Class destinationActivity = MovieDetailsActivity.class;
             Intent startChildActivityIntent = new Intent(context, destinationActivity);
@@ -219,7 +219,6 @@ public class MainActivity extends AppCompatActivity
             MovieDetailsFragment fragment = MovieDetailsFragment.newInstance(movie);
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.placeholder, fragment);
-            ft.addToBackStack(null);
             ft.commit();
         }
 
@@ -258,8 +257,20 @@ public class MainActivity extends AppCompatActivity
             }if(savedState.containsKey(MOVIE_ACTIVE)){
                 mMovie = savedState.getParcelable(MOVIE_ACTIVE);
             }
-            if(mIsPaneLayout && mMovie!= null){
-                onClick(mMovie);
+            if(mMovie!= null){
+                if(!mIsPaneLayout) {
+                    Context context = MainActivity.this;
+                    Class destinationActivity = MovieDetailsActivity.class;
+                    Intent startChildActivityIntent = new Intent(context, destinationActivity);
+                    startChildActivityIntent.putExtras(savedState);
+                    startActivityForResult(startChildActivityIntent, MOVIE_DETAILS_REQUEST);
+                }else{
+                    MovieDetailsFragment fragment = new MovieDetailsFragment();
+                    fragment.setArguments(savedState);
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.placeholder, fragment);
+                    ft.commit();
+                }
             }
         }
         else{

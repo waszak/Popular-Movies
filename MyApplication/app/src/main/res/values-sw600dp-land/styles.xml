@@ -17,6 +17,14 @@
   -->
 
 <resources>
-    <bool name="favorite">false</bool>
-    <bool name="isPaneLayout">false</bool>
+    <style name="Toolbar">
+        <item name="android:visibility">gone</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
 </resources>

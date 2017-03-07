@@ -16,13 +16,20 @@
   ~
   -->
 
-<GridLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_movies"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-</GridLayout>
+    <FrameLayout
+        android:id="@+id/placeholder"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

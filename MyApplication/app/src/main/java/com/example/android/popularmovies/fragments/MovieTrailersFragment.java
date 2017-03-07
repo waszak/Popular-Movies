@@ -86,6 +86,7 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
         Bundle args = new Bundle();
         args.putParcelable(Movie.TAG,movie);
         fragment.setArguments(args);
+
         return fragment;
     }
 
