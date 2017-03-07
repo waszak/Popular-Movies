@@ -43,7 +43,6 @@ import android.view.ViewGroup;
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.models.Results;
-import com.example.android.popularmovies.models.Review;
 import com.example.android.popularmovies.models.Trailer;
 import com.example.android.popularmovies.adapters.TrailerAdapter;
 import com.example.android.popularmovies.utilities.ITheMovieDbApi;

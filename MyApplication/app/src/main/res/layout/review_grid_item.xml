@@ -21,7 +21,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/cv_review"
+
         style="@style/CardViewDetails"
+
         >
     <LinearLayout
                   android:orientation="vertical"
@@ -29,14 +31,11 @@
                   android:layout_height="wrap_content">
         <TextView
             android:id="@+id/tv_author"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
+            style="@style/TextViewSimple"
             android:textSize="24sp"/>
             <TextView
                 android:id="@+id/tv_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TextViewSimple"
                 android:padding="16dp"
                 android:textSize="20sp"/>
     </LinearLayout>

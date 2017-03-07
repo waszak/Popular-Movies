@@ -35,8 +35,7 @@
         android:visibility="visible" />
     <TextView
         android:id="@+id/tv_error_poster_message_display"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/TextViewSimple"
         android:padding="16dp"
         android:text="@string/error_message"
         android:textSize="20sp"

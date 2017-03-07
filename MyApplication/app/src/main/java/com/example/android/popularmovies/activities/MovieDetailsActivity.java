@@ -18,7 +18,6 @@
 package com.example.android.popularmovies.activities;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;

@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 
 import com.example.android.popularmovies.adapters.ReviewAdapter;
 import com.example.android.popularmovies.core.ScrollListener;
-import com.example.android.popularmovies.data.MoviePreferences;
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.models.Results;
