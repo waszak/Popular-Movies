@@ -18,7 +18,9 @@ package com.example.android.popularmovies.utilities;
 
 
 import android.os.AsyncTask;
-
+/*
+ * Base class for creating async tasks
+ */
 public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
 
     private ICallbackTask<Result> mCallbackTask;

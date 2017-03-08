@@ -31,6 +31,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.example.android.popularmovies.activities.MovieDetailsActivity;
 import com.example.android.popularmovies.adapters.MoviesAdapter;
@@ -42,6 +43,7 @@ import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.utilities.FetchMovieTask;
 import com.example.android.popularmovies.utilities.FetchMovieTaskDB;
 import com.example.android.popularmovies.utilities.IMovieListListener;
+import com.example.android.popularmovies.utilities.NetworkUtils;
 
 import java.util.ArrayList;
 
@@ -64,8 +66,8 @@ public class MainActivity extends AppCompatActivity
     private GridLayoutManager mGridLayoutManager;
     private Movie mMovie;
 
-    private static final String MOVIE_ACTIVE = "MOVIE_ACTIVE";
-    private static final String MOVIES_ADAPTER_STATE = "MOVIES_ADAPTER_STATE";
+    private static final String MOVIE_ACTIVE = Movie.TAG;
+    public static final String MOVIES_ADAPTER_STATE = "MOVIES_ADAPTER_STATE";
 
     public static final int MOVIE_DETAILS_REQUEST = 1;
 
@@ -93,9 +95,12 @@ public class MainActivity extends AppCompatActivity
         mMovieList.setAdapter(mMoviesAdapter);
         mMovieList.addOnScrollListener(mScrollListener);
         mMoviesAdapter.setSortMode(MoviePreferences.getSortMode(this));
-
-        onRestoreState(savedInstanceState);
-
+        setTitleActivity();
+        if (getIntent().getExtras()!= null){
+            onRestoreState(getIntent().getExtras());
+        }else {
+            onRestoreState(savedInstanceState);
+        }
     }
 
     private void showMoviesDataView() {
@@ -155,10 +160,19 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
+    public void setTitleActivity(){
+        if(MoviePreferences.getFavorites(this)){
+            setTitle(R.string.favorite);
+        }else if(MoviePreferences.getSortMode(this) == MoviesAdapter.SORT_MODE.TOP_RATED){
+            setTitle(R.string.top_rated_movies);
+        }else{
+            setTitle(R.string.popular);
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        setTitleActivity();
         switch (id){
             case R.id.action_refresh:
                 invalidateData();
@@ -167,17 +181,20 @@ public class MainActivity extends AppCompatActivity
             case R.id.action_sort_popular:
                 invalidateData();
                 setSortModePreferences(MoviesAdapter.SORT_MODE.MOST_POPULAR);
+                setTitleActivity();
                 loadMoviesData(1);
 
                 return true;
             case R.id.action_top_rated:
                 invalidateData();
                 setSortModePreferences(MoviesAdapter.SORT_MODE.TOP_RATED);
+                setTitleActivity();
                 loadMoviesData(1);
                 return true;
             case R.id.action_favorites:
                 invalidateData();
                 setFavoritePreferences();
+                setTitleActivity();
                 loadMoviesData(1);
                 return true;
         }
@@ -193,6 +210,13 @@ public class MainActivity extends AppCompatActivity
         MoviePreferences.setFavorites(this,true);
     }
 
+    /**
+     *
+     * It handles onClick movie event and starts correct activity/fragment
+     *
+     * @param movie movie
+     *
+     */
     @Override
     public void onClick(Movie movie) {
         mMovie = movie;
@@ -210,6 +234,7 @@ public class MainActivity extends AppCompatActivity
             Class destinationActivity = MovieDetailsActivity.class;
             Intent startChildActivityIntent = new Intent(context, destinationActivity);
             startChildActivityIntent.putExtra(Movie.TAG, movie);
+            startChildActivityIntent.putExtra(MOVIES_ADAPTER_STATE, mMoviesAdapter.getList());
             startActivityForResult(startChildActivityIntent, MOVIE_DETAILS_REQUEST);
         }else{
             MovieDetailsFragment fragment = MovieDetailsFragment.newInstance(movie);
@@ -219,6 +244,7 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -244,6 +270,13 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    /**
+     *
+     * It recovers from bundle saved state and if necessary it starts
+     * correct activity and passes saved state
+     * @param savedState saved stated
+     *
+     */
     protected void onRestoreState(Bundle savedState) {
         if(savedState != null ){
             mMoviesAdapter.setSortMode(MoviePreferences.getSortMode(this));
@@ -274,7 +307,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
+    /**
+     *
+     *
+     * @param movieUpdated movie that we want to process
+     * @param  add tells if we want to add/remove movie from adapter
+     */
     @Override
     public void UpdateMovie(Movie movieUpdated, boolean add) {
         if(!add){

@@ -19,8 +19,8 @@ package com.example.android.popularmovies.utilities;
 
 import com.example.android.popularmovies.models.Movie;
 
-/**
- * Created by Waszak on 05.03.2017.
+/*
+ *  Listener we use to update List of movies in main activity from fragment
  */
 
 public interface IMovieListListener {

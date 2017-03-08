@@ -26,8 +26,9 @@ import com.example.android.popularmovies.models.Movie;
 
 import java.util.ArrayList;
 
-/**
- * Created by Waszak on 05.03.2017.
+/*
+ * It creates task to load movies by page and sort mode
+ * It uses DB instead
  */
 
 public class FetchMovieTaskDB  extends BaseAsyncTask<Boolean,Void,ArrayList<Movie>> {
@@ -45,7 +46,7 @@ public class FetchMovieTaskDB  extends BaseAsyncTask<Boolean,Void,ArrayList<Movi
     protected ArrayList<Movie> doInBackground(Boolean... params) {
         Uri uri = MovieContract.MovieEntry.CONTENT_URI;
         Cursor cursor = mContext.getContentResolver().query(uri, MOVIE_DETAIL_PROJECTION, null, null, null);
-        ArrayList<Movie> movies = new ArrayList<Movie>();
+        ArrayList<Movie> movies = new ArrayList<>();
         while (cursor!= null && cursor.moveToNext()){
             Movie movie = MovieContract.MovieEntry.mapToMovie(cursor);
             movies.add(movie);

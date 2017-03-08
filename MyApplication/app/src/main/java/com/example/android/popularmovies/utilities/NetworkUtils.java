@@ -81,11 +81,6 @@ public class NetworkUtils {
         return getPicasso(context).load(String.format(YOUTUBE_THUMBNAIL, youtubeId));
     }
 
-    public static boolean isInternetAvailable(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
 
     public static String getYoutubeUrl(String youtubeId ){
         return  String.format(YOUTUBE_BASE_URL, youtubeId);

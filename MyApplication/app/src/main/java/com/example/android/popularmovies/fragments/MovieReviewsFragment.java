@@ -52,7 +52,7 @@ public class MovieReviewsFragment extends Fragment {
     private ReviewAdapter mReviewAdapter;
     private Movie mMovie;
 
-    private static final String MOVIE_ACTIVE = "MOVIE_ACTIVE";
+    private static final String MOVIE_ACTIVE = Movie.TAG;
     private static final String REVIEWS_ADAPTER_STATE = "REVIEWS_ADAPTER_STATE";
 
     public MovieReviewsFragment() {

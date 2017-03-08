@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.android.popularmovies.MainActivity;
 import com.example.android.popularmovies.R;
@@ -35,6 +36,7 @@ import com.example.android.popularmovies.fragments.MovieReviewsFragment;
 import com.example.android.popularmovies.fragments.MovieTrailersFragment;
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.utilities.IMovieListListener;
+import com.example.android.popularmovies.utilities.NetworkUtils;
 
 import butterknife.BindBool;
 import butterknife.BindView;
@@ -54,7 +56,8 @@ public class MovieDetailsActivity extends AppCompatActivity
     @BindBool(R.bool.isPaneLayout) boolean mIsPaneLayout;
 
     private Movie mMovie;
-    private static final String MOVIE_ACTIVE = "MOVIE_ACTIVE";
+    private static final String MOVIE_ACTIVE =  Movie.TAG;
+    public static final String MOVIES_ADAPTER_STATE = MainActivity.MOVIES_ADAPTER_STATE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +80,6 @@ public class MovieDetailsActivity extends AppCompatActivity
         if (intentThatStartedThisActivity.hasExtra(Movie.TAG)) {
             mMovie = intentThatStartedThisActivity.getParcelableExtra(Movie.TAG);
         }
-
         onRestore(intentThatStartedThisActivity.getExtras());
 
     }

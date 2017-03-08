@@ -25,7 +25,9 @@ import com.example.android.popularmovies.models.Results;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
+/*
+ * It creates task to load movies by page and sort mode
+ */
 public class FetchMovieTask extends BaseAsyncTask<Boolean,Void,ArrayList<Movie>> {
 
     private int mPage;
