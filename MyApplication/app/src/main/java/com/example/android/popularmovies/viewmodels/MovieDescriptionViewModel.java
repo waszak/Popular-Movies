@@ -23,6 +23,9 @@ import android.widget.ImageView;
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * Created by Waszak on 19.02.2017.
  * View Model that we use to bind with view.
@@ -52,7 +55,9 @@ public class MovieDescriptionViewModel {
     }
 
     public float getScore(){
-        return mMovie.getScore();
+        BigDecimal bd = new BigDecimal(mMovie.getScore()/2);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
+        return bd.floatValue();
     }
 
     @BindingAdapter({"imageUrl"})
