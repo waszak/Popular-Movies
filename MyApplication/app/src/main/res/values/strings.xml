@@ -20,7 +20,6 @@
     <string name="popular">Popular movies</string>
     <string name="top_rated_movies">Top rated movies</string>
     <string name="favorite">Favorites movies</string>
-    <string name="internet">No internet connection</string>
     <string name="error_message">
         An error has occurred. Please try again by clicking REFRESH
     </string>
