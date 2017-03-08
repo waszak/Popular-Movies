@@ -93,6 +93,7 @@
                                 android:numStars="5"
                                 android:stepSize="0.5"
                                 android:max="5"
+                                android:layout_margin="16dp"
                                 style="?android:attr/ratingBarStyleSmall"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"

@@ -54,7 +54,8 @@ public class MovieDetailsActivity extends AppCompatActivity
     @BindBool(R.bool.isPaneLayout) boolean mIsPaneLayout;
 
     private Movie mMovie;
-    private static final String MOVIE_ACTIVE = "MOVIE_ACTIVE";
+    private static final String MOVIE_ACTIVE =  Movie.TAG;
+    public static final String MOVIES_ADAPTER_STATE = MainActivity.MOVIES_ADAPTER_STATE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

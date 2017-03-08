@@ -107,7 +107,7 @@ public class MovieContract {
             }if(colPlot > -1){
                 movie.setPlotSynopsis(cursor.getString(colPlot));
             }if(colScore > -1){
-                movie.setScore(cursor.getFloat(colPlot));
+                movie.setScore(cursor.getFloat(colScore));
             }if(colBackdrop > -1){
                 movie.setBackDropFileName(cursor.getString(colBackdrop));
             }if(colPoster > -1){

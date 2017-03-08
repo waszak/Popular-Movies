@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity
     private GridLayoutManager mGridLayoutManager;
     private Movie mMovie;
 
-    private static final String MOVIE_ACTIVE = "MOVIE_ACTIVE";
-    private static final String MOVIES_ADAPTER_STATE = "MOVIES_ADAPTER_STATE";
+    private static final String MOVIE_ACTIVE = Movie.TAG;
+    public static final String MOVIES_ADAPTER_STATE = "MOVIES_ADAPTER_STATE";
 
     public static final int MOVIE_DETAILS_REQUEST = 1;
 
@@ -93,8 +93,12 @@ public class MainActivity extends AppCompatActivity
         mMovieList.setAdapter(mMoviesAdapter);
         mMovieList.addOnScrollListener(mScrollListener);
         mMoviesAdapter.setSortMode(MoviePreferences.getSortMode(this));
-
-        onRestoreState(savedInstanceState);
+        setTitleActivity();
+        if (getIntent().getExtras()!= null){
+            onRestoreState(getIntent().getExtras());
+        }else {
+            onRestoreState(savedInstanceState);
+        }
 
     }
 
@@ -155,10 +159,19 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
+    public void setTitleActivity(){
+        if(MoviePreferences.getFavorites(this)){
+            setTitle(R.string.favorite);
+        }else if(MoviePreferences.getSortMode(this) == MoviesAdapter.SORT_MODE.TOP_RATED){
+            setTitle(R.string.top_rated_movies);
+        }else{
+            setTitle(R.string.popular);
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        setTitleActivity();
         switch (id){
             case R.id.action_refresh:
                 invalidateData();
@@ -167,17 +180,20 @@ public class MainActivity extends AppCompatActivity
             case R.id.action_sort_popular:
                 invalidateData();
                 setSortModePreferences(MoviesAdapter.SORT_MODE.MOST_POPULAR);
+                setTitleActivity();
                 loadMoviesData(1);
 
                 return true;
             case R.id.action_top_rated:
                 invalidateData();
                 setSortModePreferences(MoviesAdapter.SORT_MODE.TOP_RATED);
+                setTitleActivity();
                 loadMoviesData(1);
                 return true;
             case R.id.action_favorites:
                 invalidateData();
                 setFavoritePreferences();
+                setTitleActivity();
                 loadMoviesData(1);
                 return true;
         }
@@ -210,6 +226,7 @@ public class MainActivity extends AppCompatActivity
             Class destinationActivity = MovieDetailsActivity.class;
             Intent startChildActivityIntent = new Intent(context, destinationActivity);
             startChildActivityIntent.putExtra(Movie.TAG, movie);
+            startChildActivityIntent.putExtra(MOVIES_ADAPTER_STATE, mMoviesAdapter.getList());
             startActivityForResult(startChildActivityIntent, MOVIE_DETAILS_REQUEST);
         }else{
             MovieDetailsFragment fragment = MovieDetailsFragment.newInstance(movie);

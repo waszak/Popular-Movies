@@ -73,7 +73,7 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
     private ShareActionProvider mShareAction;
     private Intent mSharedIntent;
 
-    private static final String MOVIE_ACTIVE = "MOVIE_ACTIVE";
+    private static final String MOVIE_ACTIVE = Movie.TAG;
     private static final String TRAILER_ADAPTER_STATE = "TRAILER_ADAPTER_STATE";
 
     public MovieTrailersFragment() {
